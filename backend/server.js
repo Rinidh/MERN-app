@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import Product from "./models/product.model.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -43,6 +44,12 @@ app.post("/api/products", async (req, res) => {
 app.put("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
   const fields = req.body;
+
+  if (!mongoose.isValidObjectId(productId)) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Invalid product ID" });
+  }
 
   try {
     const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
