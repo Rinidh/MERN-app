@@ -40,6 +40,21 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
+app.put("/api/products/:id", async (req, res) => {
+  const productId = req.params.id;
+  const fields = req.body;
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
+      new: true,
+    });
+    res.status(200).json({ success: true, data: updatedProduct });
+  } catch (error) {
+    console.log("Error updating product:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
 app.delete("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
 
