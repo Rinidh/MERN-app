@@ -4,3 +4,7 @@
 -----------------------
 Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
 
+FEATURES TO ADD:
+- validation with zod in each .model.js file
+- logger eg winston instead of console.log()s
+- 
