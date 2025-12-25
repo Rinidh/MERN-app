@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json()); // Middleware to parse JSON bodies in req.body
 
-app.post("/products", async (req, res) => {
+app.post("/api/products", async (req, res) => {
   const fields = req.body;
 
   if (!fields.name || !fields.price || !fields.image) {
