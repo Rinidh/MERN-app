@@ -8,3 +8,5 @@ FEATURES TO ADD:
 - validation with zod in each .model.js file
 - logger eg winston instead of console.log()s
 - 
+
+---------

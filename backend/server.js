@@ -51,6 +51,15 @@ app.put("/api/products/:id", async (req, res) => {
       .json({ success: false, message: "Invalid product ID" });
   }
 
+  if (Object.keys(fields).length === 0) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "At least one field is required to update",
+      });
+  }
+
   try {
     const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
       new: true,
