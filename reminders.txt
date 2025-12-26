@@ -7,6 +7,6 @@ Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXX
 FEATURES TO ADD:
 - validation with zod in each .model.js file
 - logger eg winston instead of console.log()s
-- 
+- when I changed all app.get/post... to router.get/post... , I had to manually test each method again. gpt on how to automate this in Postman
 
 ---------
