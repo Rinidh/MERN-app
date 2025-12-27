@@ -5,18 +5,31 @@ import {
   IconButton,
   Image,
   Text,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 export const ProductCard = ({ product }) => {
+  const styles = useColorModeValue(
+    {
+      color: "blue.900",
+      bg: "gray.100",
+    },
+    {
+      color: "white",
+      bg: "gray.800",
+    }
+  );
+
   return (
     <Box
       rounded={"lg"}
       shadow={"lg"}
       overflow={"hidden"}
-      bg={"gray.800"}
+      bg={styles.bg}
+      color={styles.color}
       transition={"all 350ms"}
       _hover={{ transform: "translateY(-5px)", shadow: "xl" }}
     >
