@@ -29,4 +29,9 @@ export const useProductStore = create((setState) => ({
       return { success, message: "Error creating the product" };
     }
   },
+  fetchProducts: async () => {
+    const res = await fetch("/api/products");
+    const { data } = await res.json();
+    setState({ products: data });
+  },
 }));
