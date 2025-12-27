@@ -3,7 +3,8 @@ import { create } from "zustand";
 export const useProductStore = create((setState) => ({
   // all props & methods in object are part of state and passed to consumer
   products: [],
-  setProducts: (products) => setState({ products }), //? setState((prevState) => ({...prevState, products}))
+  setProducts: (products) => setState({ products }), // deals with products array in state, not individual product object
+
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
 

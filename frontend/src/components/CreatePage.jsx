@@ -32,6 +32,7 @@ export const CreatePage = () => {
         status: "success",
         isClosable: true,
       });
+      setFieldValues({ name: "", price: "", image: "" });
     } else {
       toast({
         title: "Error",
