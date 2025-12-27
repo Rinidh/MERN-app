@@ -7,7 +7,7 @@ export const useProductStore = create((setState) => ({
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
 
-    if (!name || !price || !image) {
+    if (!name.trim() || !price.trim() || !image.trim()) {
       return { success: false, message: "Please fill in all fields." };
     }
 

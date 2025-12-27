@@ -7,6 +7,7 @@ import {
   Button,
   Box,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { useProductStore } from "../store/product";
 
@@ -17,6 +18,7 @@ export const CreatePage = () => {
     image: "",
   });
   const { createProduct } = useProductStore();
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +27,22 @@ export const CreatePage = () => {
 
     if (name.trim() && price.trim() && image.trim()) {
       const { success, message } = await createProduct(fieldValues);
-      console.log("Success", success, ":", message);
+
+      if (success) {
+        toast({
+          title: "Success",
+          description: message,
+          status: "success",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: message,
+          status: "error",
+          isClosable: true,
+        });
+      }
     }
   };
 
