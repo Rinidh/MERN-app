@@ -1,12 +1,12 @@
 import { useState } from "react";
 import "./App.css";
-import { Button, ButtonGroup, Input } from "@chakra-ui/react";
+import { Input, Box, useColorModeValue } from "@chakra-ui/react";
 import { Link, Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 
 function App() {
   return (
-    <>
+    <Box bg={useColorModeValue("gray.100", "gray.900")} minH={"100vh"}>
       <Navbar />
       <Routes>
         <Route
@@ -29,7 +29,7 @@ function App() {
           }
         />
       </Routes>
-    </>
+    </Box>
   );
 }
 
