@@ -38,19 +38,20 @@ export const HomePage = () => {
           ))}
         </SimpleGrid>
 
-        {/* FALL BACK TEXT & LINK WHEN NO PRODUCTS FOUND */}
-        <Text fontWeight={"bold"} fontSize={"lg"} color={"gray.500"}>
-          No Products found 🥲{" "}
-          <Link to={"/create"}>
-            <Text
-              as={"span"}
-              color={"#0075ceff"}
-              _hover={{ textDecoration: "underline" }}
-            >
-              Create a Product
-            </Text>
-          </Link>
-        </Text>
+        {products.length === 0 && (
+          <Text fontWeight={"bold"} fontSize={"lg"} color={"gray.500"}>
+            No Products found 🥲{" "}
+            <Link to={"/create"}>
+              <Text
+                as={"span"}
+                color={"#0075ceff"}
+                _hover={{ textDecoration: "underline" }}
+              >
+                Create a Product
+              </Text>
+            </Link>
+          </Text>
+        )}
       </VStack>
     </Container>
   );

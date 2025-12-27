@@ -43,9 +43,9 @@ export const ProductCard = ({ product }) => {
       />
 
       <VStack alignItems={"start"} p={10}>
-        <Heading fontSize={"lg"}>$ {product.name}</Heading>
+        <Heading fontSize={"lg"}>{product.name}</Heading>
         <Text fontSize={"lg"} mb={15}>
-          {product.price}
+          $ {product.price}
         </Text>
 
         <HStack>
