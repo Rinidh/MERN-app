@@ -18,13 +18,13 @@ export const CreatePage = () => {
   });
   const { createProduct } = useProductStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { name, price, image } = fieldValues;
 
     if (name.trim() && price.trim() && image.trim()) {
-      const { success, message } = createProduct(fieldValues);
+      const { success, message } = await createProduct(fieldValues);
       console.log("Success", success, ":", message);
     }
   };

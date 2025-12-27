@@ -19,7 +19,7 @@ export const useProductStore = create((setState) => ({
       body: JSON.stringify(newProduct),
     });
 
-    const { data, success, message } = res.json();
+    const { data, success, message } = await res.json();
 
     if (success) {
       setState((prevState) => ({ ...prevState, products: data }));
