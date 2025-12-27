@@ -11,7 +11,7 @@ export const useProductStore = create((setState) => ({
       return { success: false, message: "Please fill in all fields." };
     }
 
-    const res = await fetch("http://localhost:5000/api/products", {
+    const res = await fetch("/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
