@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { Container, Heading, Text, VStack } from "@chakra-ui/react";
+import { Container, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/product";
+import { ProductCard } from "./ProductCard";
 
 export const HomePage = () => {
   const { fetchProducts, products } = useProductStore();
@@ -9,8 +10,6 @@ export const HomePage = () => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
-  console.log("fetched: ", products);
 
   return (
     <Container maxW={"container.xl"} p={10}>
@@ -25,6 +24,19 @@ export const HomePage = () => {
         >
           Available Products 🚀
         </Heading>
+
+        <SimpleGrid
+          columns={{
+            base: 1,
+            md: 2,
+            lg: 3,
+          }}
+          spacing={10}
+        >
+          {products.map((p) => (
+            <ProductCard key={p._id} product={p} />
+          ))}
+        </SimpleGrid>
 
         {/* FALL BACK TEXT & LINK WHEN NO PRODUCTS FOUND */}
         <Text fontWeight={"bold"} fontSize={"lg"} color={"gray.500"}>
