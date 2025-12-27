@@ -23,26 +23,22 @@ export const CreatePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { name, price, image } = fieldValues;
+    const { success, message } = await createProduct(fieldValues);
 
-    if (name.trim() && price.trim() && image.trim()) {
-      const { success, message } = await createProduct(fieldValues);
-
-      if (success) {
-        toast({
-          title: "Success",
-          description: message,
-          status: "success",
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: message,
-          status: "error",
-          isClosable: true,
-        });
-      }
+    if (success) {
+      toast({
+        title: "Success",
+        description: message,
+        status: "success",
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        isClosable: true,
+      });
     }
   };
 
