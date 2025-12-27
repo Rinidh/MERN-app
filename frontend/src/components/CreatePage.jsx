@@ -8,6 +8,7 @@ import {
   Box,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useProductStore } from "../store/product";
 
 export const CreatePage = () => {
   const [fieldValues, setFieldValues] = useState({
@@ -15,6 +16,7 @@ export const CreatePage = () => {
     price: "",
     image: "",
   });
+  const { createProduct } = useProductStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +24,8 @@ export const CreatePage = () => {
     const { name, price, image } = fieldValues;
 
     if (name.trim() && price.trim() && image.trim()) {
-      console.log("Submitted: ", fieldValues);
+      const { success, message } = createProduct(fieldValues);
+      console.log("Success", success, ":", message);
     }
   };
 
