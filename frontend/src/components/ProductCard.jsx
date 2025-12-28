@@ -87,6 +87,11 @@ export const ProductCard = ({ product }) => {
     onClose();
   };
 
+  const areSameValues =
+    product.name === currentValues.name.trim() &&
+    product.price === currentValues.price &&
+    product.image === currentValues.image.trim();
+
   return (
     <Box
       rounded={"lg"}
@@ -154,7 +159,12 @@ export const ProductCard = ({ product }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleUpdate}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleUpdate}
+              disabled={areSameValues}
+            >
               Update
             </Button>
             <Button variant="ghost" onClick={onClose}>
