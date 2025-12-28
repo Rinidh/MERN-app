@@ -1,3 +1,5 @@
+// ⭐This file is a single place for state management (hence UI updates) as well as API calls
+
 import { create } from "zustand";
 
 export const useProductStore = create((setState) => ({
@@ -33,5 +35,18 @@ export const useProductStore = create((setState) => ({
     const res = await fetch("/api/products");
     const { data } = await res.json();
     setState({ products: data });
+  },
+  deleteProduct: async (id) => {
+    const res = await fetch(`/api/products/${id}`, {
+      method: "DELETE",
+    });
+    const { success, message } = await res.json();
+
+    if (success)
+      setState((state) => ({
+        products: state.products.filter((p) => p._id !== id),
+      }));
+
+    return { success, message };
   },
 }));
