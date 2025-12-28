@@ -5,6 +5,7 @@
 Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
 
 FEATURES TO ADD:
+- add error handling in each func in store/product.js eg fetchProducts()
 - replace zustand with react context
 - validation with zod in each .model.js file
 - logger eg winston instead of console.log()s
