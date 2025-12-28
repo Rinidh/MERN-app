@@ -24,12 +24,8 @@ export const useProductStore = create((setState) => ({
 
     const { data, success, message } = await res.json();
 
-    if (success) {
-      setState((prevState) => ({ ...prevState, products: data }));
-      return { success, message: "Product created successfully." };
-    } else {
-      return { success, message: "Error creating the product" };
-    }
+    if (success) return { success, message: "Product created successfully." };
+    else return { success, message: "Error creating the product" };
   },
   fetchProducts: async () => {
     const res = await fetch("/api/products");
