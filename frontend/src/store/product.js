@@ -51,9 +51,21 @@ export const useProductStore = create((setState) => ({
     }
   },
   fetchProducts: async () => {
-    const res = await fetch("/api/products");
-    const { data } = await res.json();
-    setState({ products: data });
+    try {
+      const res = await fetch("/api/products");
+      const { data, message } = await res.json();
+
+      if (!res.ok) throw new Error(message);
+
+      setState({ products: data });
+    } catch (error) {
+      console.error("Error fetching products:", error.message);
+      setState({ products: [] });
+      return {
+        success: false,
+        message: error.message || "Error fetching products. Try again later",
+      };
+    }
   },
   deleteProduct: async (id) => {
     const res = await fetch(`/api/products/${id}`, {
