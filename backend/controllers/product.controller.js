@@ -12,20 +12,24 @@ export const getAllProducts = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const fields = req.body;
+  const { name, price, image } = req.body;
 
-  if (!fields.name || !fields.price || !fields.image) {
-    return res
-      .status(400)
-      .json({ success: false, message: "All fields are required" });
+  if (!name?.trim() || !price?.trim() || !image?.trim()) {
+    res.status(400).json({ message: "Please fill in all fields." });
+    return;
   }
 
-  const { name, price, image } = fields;
+  if (isNaN(price) || Number(price) <= 0) {
+    res.status(400).json({ message: "Price must be a valid number." });
+    return;
+  }
 
   try {
     const newProduct = new Product({ name, price, image });
     const savedProduct = await newProduct.save();
-    res.status(201).json({ success: true, data: savedProduct });
+    res
+      .status(201)
+      .json({ data: savedProduct, message: "Product created successfully" });
   } catch (error) {
     console.log("Error creating product:", error);
     res.status(500).json({ success: false, message: "Internal server Error" });

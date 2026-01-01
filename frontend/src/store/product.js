@@ -10,22 +10,45 @@ export const useProductStore = create((setState) => ({
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
 
-    if (!name.trim() || !price.trim() || !image.trim()) {
+    if (!name?.trim() || !price?.trim() || !image?.trim()) {
       return { success: false, message: "Please fill in all fields." };
     }
 
-    const res = await fetch("/api/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProduct),
-    });
+    if (window.isNaN(price) || Number(price) <= 0) {
+      return { success: false, message: "Price must be a valid number." };
+    }
 
-    const { data, success, message } = await res.json();
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      });
 
-    if (success) return { success, message: "Product created successfully." };
-    else return { success, message: "Error creating the product" };
+      const { data, message } = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: message || "Failed to create product",
+        };
+      }
+
+      setState((state) => ({ products: [...state.products, data] }));
+
+      return {
+        success: true,
+        message: message || "Product created successfully",
+      };
+    } catch (error) {
+      console.error("Error creating product", error);
+      return {
+        success: false,
+        message: "Network error. Please try again later",
+      };
+    }
   },
   fetchProducts: async () => {
     const res = await fetch("/api/products");
