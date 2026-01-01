@@ -1,14 +1,42 @@
-import { useEffect } from "react";
-import { Container, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Container,
+  Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Text,
+  useColorModeValue,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/product";
 import { ProductCard } from "./ProductCard";
 
 export const HomePage = () => {
   const { fetchProducts, products } = useProductStore();
+  const [error, setError] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const fetch = async () => {
+    const { success, message } = await fetchProducts();
+    if (!success) {
+      onOpen();
+      setError(message);
+    } else {
+      onClose();
+    }
+  };
 
   useEffect(() => {
-    fetchProducts();
+    fetch();
   }, [fetchProducts]);
 
   return (
@@ -53,6 +81,21 @@ export const HomePage = () => {
           </Text>
         )}
       </VStack>
+
+      <Modal isOpen={isOpen}>
+        <ModalOverlay />
+        <ModalContent bg={useColorModeValue("pink.100", "red.900")}>
+          <ModalHeader>Error</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>{error}</ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={fetch}>
+              Retry
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };
