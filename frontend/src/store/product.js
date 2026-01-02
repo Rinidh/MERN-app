@@ -58,6 +58,8 @@ export const useProductStore = create((setState) => ({
       if (!res.ok) throw new Error(message);
 
       setState({ products: data });
+
+      return { success: true };
     } catch (error) {
       console.error("Error fetching products:", error.message);
       setState({ products: [] });
