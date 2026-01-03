@@ -1,12 +1,13 @@
 import Product from "../models/product.model.js";
 import mongoose from "mongoose";
+import { logger } from "../logger.js";
 
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
     res.status(200).json({ data: products });
   } catch (error) {
-    console.log("Error fetching products:", error);
+    logger.error("Error fetching products:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -31,7 +32,7 @@ export const createProduct = async (req, res) => {
       .status(201)
       .json({ data: savedProduct, message: "Product created successfully" });
   } catch (error) {
-    console.log("Error creating product:", error);
+    logger.error("Error creating product:", error);
     res.status(500).json({ message: "Internal server Error" });
   }
 };
@@ -51,14 +52,18 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
-      new: true,
-    });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId + "xxx",
+      fields,
+      {
+        new: true,
+      }
+    );
     res
       .status(200)
       .json({ data: updatedProduct, message: "Product updated successfully" });
   } catch (error) {
-    console.log("Error updating product:", error);
+    logger.error("Error updating product:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -74,7 +79,7 @@ export const deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(productId);
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
-    console.log("Error deleting product:", error);
+    logger.error("Error deleting product:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

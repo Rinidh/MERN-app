@@ -5,11 +5,11 @@
 Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
 
 FEATURES TO ADD:
-- add error handling in each func in store/product.js eg fetchProducts()
-- replace zustand with react context
-- validation with zod in each .model.js file
 - logger eg winston instead of console.log()s
 - when I changed all app.get/post... to router.get/post... , I had to manually test each method again. gpt on how to automate this in Postman
-- first create new branch, first write tests then migrate to TS
+- write all tests: frontend & backend with AI (learn libraries along)
+- first create new branch, then migrate to TS
+- validation with zod in each .model.js file
+- expand with more features: services, users, 
 
 ---------

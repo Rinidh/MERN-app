@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
 import path from "path";
+import { logger } from "./logger.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -24,5 +25,5 @@ if (process.env.NODE_ENV === "production") {
 
 connectDB();
 app.listen(PORT, () => {
-  console.log("Server is running on port:" + PORT);
+  logger.info("Server is running on port:" + PORT);
 });
