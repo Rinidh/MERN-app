@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Heading,
@@ -8,6 +8,7 @@ import {
   Box,
   useColorModeValue,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useProductStore } from "../store/product";
 
@@ -17,15 +18,16 @@ export const CreatePage = () => {
     price: "",
     image: "",
   });
-  const { createProduct } = useProductStore();
+  const { createProduct, error, isLoading, message } = useProductStore();
   const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await createProduct(fieldValues);
+  };
 
-    const { success, message } = await createProduct(fieldValues);
-
-    if (success) {
+  useEffect(() => {
+    if (message) {
       toast({
         title: "Success",
         description: message,
@@ -33,15 +35,16 @@ export const CreatePage = () => {
         isClosable: true,
       });
       setFieldValues({ name: "", price: "", image: "" });
-    } else {
+    }
+    if (error) {
       toast({
         title: "Error",
-        description: message,
+        description: error,
         status: "error",
         isClosable: true,
       });
     }
-  };
+  }, [message, error]);
 
   return (
     <Container maxW={"container.sm"}>
@@ -83,8 +86,17 @@ export const CreatePage = () => {
                 }
               />
 
-              <Button type="sumbit" variant={"solid"} colorScheme="blue">
-                Add Product
+              <Button
+                type="sumbit"
+                variant={"solid"}
+                colorScheme="blue"
+                width={"full"}
+              >
+                {isLoading ? (
+                  <Spinner borderWidth={"medium"} size={"md"} />
+                ) : (
+                  "Add Product"
+                )}
               </Button>
             </VStack>
           </form>
