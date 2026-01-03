@@ -4,7 +4,8 @@ import { safeParseJson } from "../util";
 export const useProductStore = create((setState) => ({
   products: [],
   isLoading: false,
-  error: null,
+  error: null, // server message upon error
+  message: "", // server message upon success
 
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
@@ -17,6 +18,8 @@ export const useProductStore = create((setState) => ({
       return { success: false, message: "Price must be a valid number." };
     }
 
+    setState({ error: null, isLoading: true, message: "" });
+
     try {
       const res = await fetch("/api/products", {
         method: "POST",
@@ -28,29 +31,21 @@ export const useProductStore = create((setState) => ({
 
       const { data, message } = await safeParseJson(res);
 
-      if (!res.ok) {
-        return {
-          success: false,
-          message: message || "Failed to create product",
-        };
-      }
-
-      setState((state) => ({ products: [...state.products, data] }));
-
-      return {
-        success: true,
+      setState((state) => ({
+        products: [...state.products, data],
+        isLoading: false,
         message: message || "Product created successfully",
-      };
+      }));
     } catch (error) {
       console.error("Error creating product", error);
-      return {
-        success: false,
-        message: "Network error. Please try again later",
-      };
+      setState({
+        isLoading: false,
+        error: error.message,
+      });
     }
   },
   fetchProducts: async () => {
-    setState({ isLoading: true, error: null });
+    setState({ isLoading: true, error: null, message: "" });
 
     try {
       const res = await fetch("/api/products");
