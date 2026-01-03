@@ -16,13 +16,12 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useProductStore } from "../store/product";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const ProductCard = ({ product }) => {
   const [currentValues, setCurrentValues] = useState({
@@ -40,23 +39,8 @@ export const ProductCard = ({ product }) => {
       bg: "gray.800",
     }
   );
-  const { deleteProduct, updateProduct, message, setMessage } =
-    useProductStore();
-  const toast = useToast();
+  const { deleteProduct, updateProduct } = useProductStore();
   const { isOpen, onClose, onOpen } = useDisclosure();
-
-  useEffect(() => {
-    if (message) {
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        duration: 3000,
-      });
-      setMessage("");
-    }
-    // errors will be shown in the modal in HomePage
-  }, [message]);
 
   const areSameValues =
     product.name === currentValues.name.trim() &&

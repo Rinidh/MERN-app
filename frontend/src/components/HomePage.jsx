@@ -15,6 +15,7 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
@@ -22,8 +23,10 @@ import { useProductStore } from "../store/product";
 import { ProductCard } from "./ProductCard";
 
 export const HomePage = () => {
-  const { fetchProducts, products, error, isLoading } = useProductStore();
+  const { fetchProducts, products, error, isLoading, message, setMessage } =
+    useProductStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   useEffect(() => {
     fetchProducts();
@@ -33,6 +36,27 @@ export const HomePage = () => {
     if (error) onOpen();
     else onClose();
   }, [error]);
+
+  useEffect(() => {
+    if (message) {
+      toast({
+        title: "Success",
+        description: message,
+        status: "success",
+        isClosable: true,
+      });
+      setMessage("");
+    }
+    if (error) {
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        isClosable: true,
+      });
+      setMessage("");
+    }
+  }, [message, error]);
 
   return (
     <Container maxW={"container.xl"} p={10}>
