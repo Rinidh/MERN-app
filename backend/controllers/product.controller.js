@@ -32,7 +32,7 @@ export const createProduct = async (req, res) => {
       .json({ data: savedProduct, message: "Product created successfully" });
   } catch (error) {
     console.log("Error creating product:", error);
-    res.status(500).json({ success: false, message: "Internal server Error" });
+    res.status(500).json({ message: "Internal server Error" });
   }
 };
 
@@ -41,14 +41,11 @@ export const updateProduct = async (req, res) => {
   const fields = req.body;
 
   if (!mongoose.isValidObjectId(productId)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Invalid product ID" });
+    return res.status(404).json({ message: "Invalid product ID" });
   }
 
   if (Object.keys(fields).length === 0) {
     return res.status(400).json({
-      success: false,
       message: "At least one field is required to update",
     });
   }
@@ -57,10 +54,12 @@ export const updateProduct = async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
       new: true,
     });
-    res.status(200).json({ success: true, data: updatedProduct });
+    res
+      .status(200)
+      .json({ data: updatedProduct, message: "Product updated successfully" });
   } catch (error) {
     console.log("Error updating product:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

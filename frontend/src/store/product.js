@@ -91,20 +91,30 @@ export const useProductStore = create((setState) => ({
     }
   },
   updateProduct: async (pid, updatedProduct) => {
-    const res = await fetch(`/api/products/${pid}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedProduct),
-    });
-    const { success, message, data } = await res.json();
+    try {
+      const res = await fetch(`/api/products/${pid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProduct),
+      });
 
-    if (success)
+      const { message, data } = await res.json();
+
+      if (!res.ok) throw new Error(message);
+
       setState((state) => ({
         products: state.products.map((p) => (p._id === pid ? data : p)),
       }));
 
-    return { success, message: "Product updated successfully" };
+      return { success: true, message };
+    } catch (error) {
+      console.error("Error updating product", error.message);
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
   },
 }));
