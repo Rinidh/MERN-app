@@ -64,6 +64,8 @@ export const useProductStore = create((setState) => ({
     }
   },
   deleteProduct: async (id) => {
+    setState({ error: null, isLoading: true, message: "" });
+
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
@@ -71,17 +73,18 @@ export const useProductStore = create((setState) => ({
 
       const { message } = await safeParseJson(res);
 
-      if (!res.ok) {
-        throw new Error(message);
-      }
-
       setState((state) => ({
         products: state.products.filter((p) => p._id !== id),
+        message,
+        isLoading: false,
       }));
-
-      return { success: true, message };
     } catch (error) {
-      return { success: false, message: error.message };
+      console.error("Error deleting product:", error);
+
+      setState({
+        error: error.message,
+        isLoading: false,
+      });
     }
   },
   updateProduct: async (pid, updatedProduct) => {
