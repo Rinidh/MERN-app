@@ -54,7 +54,7 @@ export const useProductStore = create((setState) => ({
 
       setState({ products: data, isLoading: false });
     } catch (error) {
-      console.error("Error fetching products:", error.message);
+      console.error("Error fetching products:", error);
 
       setState({
         products: [],
@@ -88,6 +88,8 @@ export const useProductStore = create((setState) => ({
     }
   },
   updateProduct: async (pid, updatedProduct) => {
+    setState({ error: null, message: "", isLoading: true });
+
     try {
       const res = await fetch(`/api/products/${pid}`, {
         method: "PUT",
@@ -99,19 +101,18 @@ export const useProductStore = create((setState) => ({
 
       const { message, data } = await safeParseJson(res);
 
-      if (!res.ok) throw new Error(message);
-
       setState((state) => ({
         products: state.products.map((p) => (p._id === pid ? data : p)),
+        message,
+        isLoading: false,
       }));
-
-      return { success: true, message };
     } catch (error) {
-      console.error("Error updating product", error.message);
-      return {
-        success: false,
-        message: error.message,
-      };
+      console.error("Error updating product", error);
+
+      setState({
+        error: error.message,
+        isLoading: false,
+      });
     }
   },
 }));
