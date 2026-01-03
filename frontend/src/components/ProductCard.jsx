@@ -22,7 +22,7 @@ import {
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useProductStore } from "../store/product";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ProductCard = ({ product }) => {
   const [currentValues, setCurrentValues] = useState({
@@ -40,29 +40,22 @@ export const ProductCard = ({ product }) => {
       bg: "gray.800",
     }
   );
-  const { deleteProduct, updateProduct } = useProductStore();
+  const { deleteProduct, updateProduct, message } = useProductStore();
   const toast = useToast();
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const handleDelete = async () => {
-    const { success, message } = await deleteProduct(product._id);
-
-    if (success) {
+  useEffect(() => {
+    if (message) {
       toast({
         title: "Success",
         description: message,
         status: "success",
         duration: 3000,
       });
-    } else {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        duration: 3000,
-      });
     }
-  };
+    // errors will be shown in the modal in HomePage
+  }, [message]);
+
   const handleUpdate = async () => {
     const { success, message } = await updateProduct(
       product._id,
@@ -126,7 +119,7 @@ export const ProductCard = ({ product }) => {
           <IconButton
             icon={<MdDelete />}
             colorScheme="red"
-            onClick={handleDelete}
+            onClick={() => deleteProduct(product._id)}
           />
         </HStack>
       </VStack>
