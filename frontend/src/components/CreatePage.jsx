@@ -18,7 +18,8 @@ export const CreatePage = () => {
     price: "",
     image: "",
   });
-  const { createProduct, error, isLoading, message } = useProductStore();
+  const { createProduct, error, isLoading, message, setMessage } =
+    useProductStore();
   const toast = useToast();
 
   const handleSubmit = async (e) => {
@@ -35,6 +36,7 @@ export const CreatePage = () => {
         isClosable: true,
       });
       setFieldValues({ name: "", price: "", image: "" });
+      setMessage("");
     }
     if (error) {
       toast({
@@ -43,6 +45,7 @@ export const CreatePage = () => {
         status: "error",
         isClosable: true,
       });
+      setMessage("");
     }
   }, [message, error]);
 

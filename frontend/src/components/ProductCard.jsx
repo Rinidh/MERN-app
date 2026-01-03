@@ -40,7 +40,8 @@ export const ProductCard = ({ product }) => {
       bg: "gray.800",
     }
   );
-  const { deleteProduct, updateProduct, message } = useProductStore();
+  const { deleteProduct, updateProduct, message, setMessage } =
+    useProductStore();
   const toast = useToast();
   const { isOpen, onClose, onOpen } = useDisclosure();
 
@@ -52,6 +53,7 @@ export const ProductCard = ({ product }) => {
         status: "success",
         duration: 3000,
       });
+      setMessage("");
     }
     // errors will be shown in the modal in HomePage
   }, [message]);

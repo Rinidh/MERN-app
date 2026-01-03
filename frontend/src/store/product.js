@@ -6,6 +6,7 @@ export const useProductStore = create((setState) => ({
   isLoading: false,
   error: null, // server message upon error
   message: "", // server message upon success
+  setMessage: (message) => setState({ message }),
 
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
