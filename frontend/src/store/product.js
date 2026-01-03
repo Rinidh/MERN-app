@@ -1,12 +1,10 @@
-// ⭐This file is a single place for state management (hence UI updates) as well as API calls
-
 import { create } from "zustand";
 import { safeParseJson } from "../util";
 
 export const useProductStore = create((setState) => ({
-  // all props & methods in object are part of state and passed to consumer
   products: [],
-  setProducts: (products) => setState({ products }), // deals with products array in state, not individual product object
+  isLoading: false,
+  error: null,
 
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
@@ -52,22 +50,22 @@ export const useProductStore = create((setState) => ({
     }
   },
   fetchProducts: async () => {
+    setState({ isLoading: true, error: null });
+
     try {
       const res = await fetch("/api/products");
 
       const { data } = await safeParseJson(res);
 
-      setState({ products: data });
-
-      return { success: true };
+      setState({ products: data, isLoading: false });
     } catch (error) {
       console.error("Error fetching products:", error.message);
-      setState({ products: [] });
 
-      return {
-        success: false,
-        message: error.message || "Error fetching products. Try again later",
-      };
+      setState({
+        products: [],
+        isLoading: false,
+        error: error.message || "Error fetching products. Try again later",
+      });
     }
   },
   deleteProduct: async (id) => {
