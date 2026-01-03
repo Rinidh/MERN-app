@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
-  Spinner,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -21,6 +20,7 @@ import {
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/product";
 import { ProductCard } from "./ProductCard";
+import { CustomSpinner } from "./CustomSpinner";
 
 export const HomePage = () => {
   const { fetchProducts, products, error, isLoading, message, setMessage } =
@@ -100,10 +100,10 @@ export const HomePage = () => {
           </Text>
         )}
 
-        {isLoading && <Spinner borderWidth="thick" size="lg" />}
+        <CustomSpinner isLoading={isLoading} />
       </VStack>
 
-      <Modal isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={useColorModeValue("pink.100", "red.900")}>
           <ModalHeader>Error</ModalHeader>
