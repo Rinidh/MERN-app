@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Button,
   Container,
@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Spinner,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -21,23 +22,17 @@ import { useProductStore } from "../store/product";
 import { ProductCard } from "./ProductCard";
 
 export const HomePage = () => {
-  const { fetchProducts, products } = useProductStore();
-  const [error, setError] = useState("");
+  const { fetchProducts, products, error, isLoading } = useProductStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const fetch = async () => {
-    const { success, message } = await fetchProducts();
-    if (!success) {
-      onOpen();
-      setError(message);
-    } else {
-      onClose();
-    }
-  };
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   useEffect(() => {
-    fetch();
-  }, [fetchProducts]);
+    if (error) onOpen();
+    else onClose();
+  }, [error]);
 
   return (
     <Container maxW={"container.xl"} p={10}>
@@ -66,7 +61,7 @@ export const HomePage = () => {
           ))}
         </SimpleGrid>
 
-        {products.length === 0 && (
+        {!isLoading && products.length === 0 && (
           <Text fontWeight={"bold"} fontSize={"lg"} color={"gray.500"}>
             No Products found 🥲{" "}
             <Link to={"/create"}>
@@ -80,6 +75,8 @@ export const HomePage = () => {
             </Link>
           </Text>
         )}
+
+        {isLoading && <Spinner borderWidth="thick" size="lg" />}
       </VStack>
 
       <Modal isOpen={isOpen}>
@@ -90,7 +87,7 @@ export const HomePage = () => {
           <ModalBody>{error}</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={fetch}>
+            <Button colorScheme="blue" mr={3} onClick={fetchProducts}>
               Retry
             </Button>
           </ModalFooter>
