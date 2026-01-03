@@ -56,30 +56,6 @@ export const ProductCard = ({ product }) => {
     // errors will be shown in the modal in HomePage
   }, [message]);
 
-  const handleUpdate = async () => {
-    const { success, message } = await updateProduct(
-      product._id,
-      currentValues
-    );
-    if (success) {
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        duration: 3000,
-      });
-    } else {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        duration: 3000,
-      });
-    }
-
-    onClose();
-  };
-
   const areSameValues =
     product.name === currentValues.name.trim() &&
     product.price === currentValues.price &&
@@ -155,7 +131,10 @@ export const ProductCard = ({ product }) => {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={handleUpdate}
+              onClick={() => {
+                updateProduct(product._id, currentValues);
+                onClose();
+              }}
               disabled={areSameValues}
             >
               Update
