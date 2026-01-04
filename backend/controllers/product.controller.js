@@ -42,6 +42,7 @@ export const updateProduct = async (req, res) => {
   const fields = req.body;
 
   if (!mongoose.isValidObjectId(productId)) {
+    logger.warn("Invalid mongo ID detected: ", productId);
     return res.status(404).json({ message: "Invalid product ID" });
   }
 
@@ -72,6 +73,7 @@ export const deleteProduct = async (req, res) => {
   const productId = req.params.id;
 
   if (!mongoose.isValidObjectId(productId)) {
+    logger.warn("Invalid mongo ID detected: ", productId);
     return res.status(404).json({ message: "Invalid product ID" });
   }
 
