@@ -1,5 +1,6 @@
 import winston from "winston";
 import "express-async-errors";
+import "winston-mongodb";
 
 //CUSTOM LOGGER
 export const logger = winston.createLogger({
@@ -13,6 +14,11 @@ export const logger = winston.createLogger({
     new winston.transports.File({ filename: "logs/combined.log" }), //all logs (info, warn and errors) using this custom logger go here
     new winston.transports.Console({
       format: winston.format.simple(),
+    }),
+    new winston.transports.MongoDB({
+      db: "mongodb+srv://rinidhdhokia_db_user:qv7QrkWnYZw1YUx1@cluster0.s3sdw6b.mongodb.net/products?appName=Cluster0",
+      collection: "log",
+      level: "warn",
     }),
   ],
 
