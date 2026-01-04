@@ -7,10 +7,10 @@ export const logger = winston.createLogger({
   format: winston.format.simple(),
   transports: [
     new winston.transports.File({
-      filename: "errors.log",
+      filename: "logs/errors.log",
       level: "error", //only error level messages go into errors.log
     }),
-    new winston.transports.File({ filename: "combined.log" }), //all logs (info, warn and errors) using this custom logger go here
+    new winston.transports.File({ filename: "logs/combined.log" }), //all logs (info, warn and errors) using this custom logger go here
     new winston.transports.Console({
       format: winston.format.simple(),
     }),
@@ -18,11 +18,11 @@ export const logger = winston.createLogger({
 
   //PROCESS CATCHERS:
   exceptionHandlers: [
-    new winston.transports.File({ filename: "exceptions.log" }),
+    new winston.transports.File({ filename: "logs/exceptions.log" }),
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
   rejectionHandlers: [
-    new winston.transports.File({ filename: "rejections.log" }),
+    new winston.transports.File({ filename: "logs/rejections.log" }),
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
 });

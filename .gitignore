@@ -2,3 +2,4 @@ node_modules/
 expt*
 .env
 *.log
+logs/
