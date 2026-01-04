@@ -1,21 +1,77 @@
 import { create } from "zustand";
 import { safeParseJson } from "../util";
 
-export const useProductStore = create((setState) => ({
+/* -----------------------------
+   Domain types
+------------------------------ */
+
+export type Product = {
+  _id: string;
+  name: string;
+  price: string;
+  image: string;
+};
+
+/**
+ * Shape expected when creating/updating a product
+ * (before it has an _id)
+ */
+export type ProductInput = {
+  name: string;
+  price: string | number;
+  image: string;
+};
+
+/**
+ * Standard response returned by store actions
+ * (used by createProduct)
+ */
+type ActionResult = {
+  success: boolean;
+  message: string;
+};
+
+/* -----------------------------
+   Store state + actions
+------------------------------ */
+
+type ProductStore = {
+  products: Product[];
+  isLoading: boolean;
+  error: string | null;
+  message: string;
+
+  setMessage: (message: string) => void;
+
+  createProduct: (newProduct: ProductInput) => Promise<ActionResult | void>;
+  fetchProducts: () => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  updateProduct: (
+    pid: string,
+    updatedProduct: Partial<ProductInput>
+  ) => Promise<void>;
+};
+
+/* -----------------------------
+   Store implementation
+------------------------------ */
+
+export const useProductStore = create<ProductStore>((setState) => ({
   products: [],
   isLoading: false,
   error: null, // server message upon error
   message: "", // server message upon success
+
   setMessage: (message) => setState({ message }),
 
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
 
-    if (!name?.trim() || !price?.trim() || !image?.trim()) {
+    if (!name?.trim() || !image?.trim() || price === undefined) {
       return { success: false, message: "Please fill in all fields." };
     }
 
-    if (window.isNaN(price) || Number(price) <= 0) {
+    if (Number.isNaN(Number(price)) || Number(price) <= 0) {
       return { success: false, message: "Price must be a valid number." };
     }
 
@@ -27,10 +83,10 @@ export const useProductStore = create((setState) => ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newProduct),
+        body: JSON.stringify({ ...newProduct, price: Number(price) }),
       });
 
-      const { data, message } = await safeParseJson(res);
+      const { data, message } = await safeParseJson<Product>(res);
 
       setState((state) => ({
         products: [...state.products, data],
@@ -41,17 +97,19 @@ export const useProductStore = create((setState) => ({
       console.error("Error creating product", error);
       setState({
         isLoading: false,
-        error: error.message,
+        error:
+          error instanceof Error ? error.message : "Failed to create product",
       });
     }
   },
+
   fetchProducts: async () => {
     setState({ isLoading: true, error: null, message: "" });
 
     try {
       const res = await fetch("/api/products");
 
-      const { data } = await safeParseJson(res);
+      const { data } = await safeParseJson<Product[]>(res);
 
       setState({ products: data, isLoading: false });
     } catch (error) {
@@ -60,10 +118,14 @@ export const useProductStore = create((setState) => ({
       setState({
         products: [],
         isLoading: false,
-        error: error.message || "Error fetching products. Try again later",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Error fetching products. Try again later",
       });
     }
   },
+
   deleteProduct: async (id) => {
     setState({ error: null, isLoading: true, message: "" });
 
@@ -83,11 +145,13 @@ export const useProductStore = create((setState) => ({
       console.error("Error deleting product:", error);
 
       setState({
-        error: error.message,
+        error:
+          error instanceof Error ? error.message : "Failed to delete product",
         isLoading: false,
       });
     }
   },
+
   updateProduct: async (pid, updatedProduct) => {
     setState({ error: null, message: "", isLoading: true });
 
@@ -100,7 +164,7 @@ export const useProductStore = create((setState) => ({
         body: JSON.stringify(updatedProduct),
       });
 
-      const { message, data } = await safeParseJson(res);
+      const { message, data } = await safeParseJson<Product>(res);
 
       setState((state) => ({
         products: state.products.map((p) => (p._id === pid ? data : p)),
