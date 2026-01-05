@@ -31,6 +31,14 @@ type ActionResult = {
   message: string;
 };
 
+/**
+ * Shape of backend API response body's json
+ */
+type ApiResponse<T> = {
+  data?: T;
+  message?: string;
+};
+
 /* -----------------------------
    Store state + actions
 ------------------------------ */
@@ -86,7 +94,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
         body: JSON.stringify({ ...newProduct, price: Number(price) }),
       });
 
-      const { data, message } = await safeParseJson<Product>(res);
+      const { data, message } = await safeParseJson<ApiResponse<Product>>(res);
 
       setState((state) => ({
         products: [...state.products, data],
@@ -109,7 +117,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
     try {
       const res = await fetch("/api/products");
 
-      const { data } = await safeParseJson<Product[]>(res);
+      const { data } = await safeParseJson<ApiResponse<Product[]>>(res);
 
       setState({ products: data, isLoading: false });
     } catch (error) {
@@ -134,7 +142,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
         method: "DELETE",
       });
 
-      const { message } = await safeParseJson(res);
+      const { message } = await safeParseJson<ApiResponse<null>>(res);
 
       setState((state) => ({
         products: state.products.filter((p) => p._id !== id),
@@ -164,7 +172,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
         body: JSON.stringify(updatedProduct),
       });
 
-      const { message, data } = await safeParseJson<Product>(res);
+      const { message, data } = await safeParseJson<ApiResponse<Product>>(res);
 
       setState((state) => ({
         products: state.products.map((p) => (p._id === pid ? data : p)),
