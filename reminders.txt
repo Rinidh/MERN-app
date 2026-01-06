@@ -12,3 +12,45 @@ FEATURES TO ADD:
 - expand with more features: services, users, 
 
 ---------
+Project Folder Structure Tree:
+
+root/
+├─ frontend/                               # React + Vite app
+│  ├─ src/
+│  │  ├─ components/                       # Reusable UI components
+|  │  │  ├─ CreatePage.tsx
+|  │  │  ├─ CustomSpinner.tsx
+|  │  │  ├─ HomePage.tsx
+|  │  │  ├─ Navbar.tsx
+|  │  │  └─ ProductCard.tsx
+│  │  ├─ pages/                            # Route-level components
+│  │  ├─ store/                            # Zustand stores
+|  │  │  └─ product.ts
+│  │  ├─ util/                             
+|  │  │  └─ index.ts                       # contains helper functions like safeParseJson()
+│  │  ├─ App.css
+│  │  ├─ App.jsx
+│  │  ├─ index.css
+│  │  └─ main.tsx                          # App entry point
+|  ├─ eslint.config.js
+|  ├─ index.html
+|  ├─ package.json                         # frontend dependencies
+|  ├─ README.md
+|  ├─ tsconfig.json
+|  └─ vite.config.js                       # Proxy + build config
+├─ backend/
+│  ├─ models/                              # Mongoose schemas
+|  |  └─ product.model.js
+│  ├─ routes/                              # Express routes
+|  |  └─ product.route.js
+│  ├─ controllers/                         
+|  |  └─ product.controller.js             # Request handlers for create, update, delete and get for domain of "product"
+|  ├─ config/
+|  |   └─ db.js                            # mongo db connection using mongoose
+|  ├─ logger.js                            # winston logger
+│  └─ server.ts                            # Express bootstrap
+└─ package.json                            # Backend dependencies
+
+-----------
+
+
