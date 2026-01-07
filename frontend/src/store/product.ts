@@ -8,7 +8,7 @@ import { safeParseJson } from "../util";
 export type Product = {
   _id: string;
   name: string;
-  price: string;
+  price: number;
   image: string;
 };
 
@@ -18,7 +18,7 @@ export type Product = {
  */
 export type ProductInput = {
   name: string;
-  price: string | number;
+  price: string | number; // can be string in HTMLInputElement.value otherwise always a number eg in product sent to/fetched from server
   image: string;
 };
 

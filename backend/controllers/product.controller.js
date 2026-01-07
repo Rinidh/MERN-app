@@ -15,12 +15,13 @@ export const getAllProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const { name, price, image } = req.body;
 
-  if (!name?.trim() || !price?.trim() || !image?.trim()) {
+  if (!name?.trim() || !price || !image?.trim()) {
     res.status(400).json({ message: "Please fill in all fields." });
     return;
   }
 
-  if (isNaN(price) || Number(price) <= 0) {
+  const num = Number(price);
+  if (Number.isNaN(num) || num <= 0) {
     res.status(400).json({ message: "Price must be a valid number." });
     return;
   }

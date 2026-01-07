@@ -73,6 +73,7 @@ export const CreatePage = () => {
                 }
               />
               <Input
+                type="number"
                 placeholder="Price"
                 name="price"
                 value={fieldValues.price}

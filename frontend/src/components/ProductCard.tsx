@@ -47,7 +47,7 @@ export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
 
   const areSameValues =
     product.name === currentValues.name.trim() &&
-    product.price === currentValues.price &&
+    product.price === Number(currentValues.price) && //
     product.image === currentValues.image.trim();
 
   return (
