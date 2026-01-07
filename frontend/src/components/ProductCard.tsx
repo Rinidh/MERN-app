@@ -22,9 +22,12 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
+import type { Product, ProductInput } from "../store/product";
 
-export const ProductCard = ({ product }) => {
-  const [currentValues, setCurrentValues] = useState({
+type ProductCardProps = { product: Product };
+
+export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
+  const [currentValues, setCurrentValues] = useState<ProductInput>({
     name: product.name,
     price: product.price,
     image: product.image,
@@ -74,11 +77,13 @@ export const ProductCard = ({ product }) => {
 
         <HStack>
           <IconButton
+            aria-label="edit product"
             icon={<FaRegEdit />}
             colorScheme="blue"
             onClick={onOpen}
           />
           <IconButton
+            aria-label="Delete product"
             icon={<MdDelete />}
             colorScheme="red"
             onClick={() => deleteProduct(product._id)}
@@ -94,18 +99,21 @@ export const ProductCard = ({ product }) => {
 
           <ModalBody>
             <Input
+              placeholder="Product Name"
               value={currentValues.name}
               onChange={(e) =>
                 setCurrentValues({ ...currentValues, name: e.target.value })
               }
             />
             <Input
+              placeholder="Price"
               value={currentValues.price}
               onChange={(e) =>
                 setCurrentValues({ ...currentValues, price: e.target.value })
               }
             />
             <Input
+              placeholder="Image URL"
               value={currentValues.image}
               onChange={(e) =>
                 setCurrentValues({ ...currentValues, image: e.target.value })
@@ -121,7 +129,7 @@ export const ProductCard = ({ product }) => {
                 updateProduct(product._id, currentValues);
                 onClose();
               }}
-              disabled={areSameValues}
+              isDisabled={areSameValues}
             >
               Update
             </Button>

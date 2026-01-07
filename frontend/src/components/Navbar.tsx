@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Button,
   Container,
@@ -10,12 +9,12 @@ import {
 import { Link } from "react-router-dom";
 import { AddIcon, SunIcon, MoonIcon } from "@chakra-ui/icons";
 
-export const Navbar = () => {
+export function Navbar(): JSX.Element {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Container maxW={"1140px"}>
-      <Flex spacing={2} alignItems={"center"} justifyContent={"space-between"}>
+      <Flex alignItems={"center"} justifyContent={"space-between"}>
         <Link to="/">
           <Text
             fontSize={"2xl"}
@@ -41,4 +40,4 @@ export const Navbar = () => {
       </Flex>
     </Container>
   );
-};
+}
