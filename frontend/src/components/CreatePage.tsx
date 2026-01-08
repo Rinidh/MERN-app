@@ -16,7 +16,7 @@ import type { ProductInput } from "../store/product";
 export const CreatePage = () => {
   const [fieldValues, setFieldValues] = useState<ProductInput>({
     name: "",
-    price: "",
+    price: 0,
     image: "",
   });
   const { createProduct, error, isLoading, message, setMessage } =
@@ -79,7 +79,10 @@ export const CreatePage = () => {
                 name="price"
                 value={fieldValues.price}
                 onChange={(e) =>
-                  setFieldValues({ ...fieldValues, price: e.target.value })
+                  setFieldValues({
+                    ...fieldValues,
+                    price: Number(e.target.value),
+                  })
                 }
               />
               <Input
@@ -92,7 +95,7 @@ export const CreatePage = () => {
               />
 
               <Button
-                type="sumbit"
+                type="submit"
                 variant={"solid"}
                 colorScheme="blue"
                 width={"full"}
