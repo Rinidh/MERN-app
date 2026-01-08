@@ -11,9 +11,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useProductStore } from "../store/product";
+import type { ProductInput } from "../store/product";
 
 export const CreatePage = () => {
-  const [fieldValues, setFieldValues] = useState({
+  const [fieldValues, setFieldValues] = useState<ProductInput>({
     name: "",
     price: "",
     image: "",
@@ -22,7 +23,7 @@ export const CreatePage = () => {
     useProductStore();
   const toast = useToast();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await createProduct(fieldValues);
   };
@@ -47,7 +48,7 @@ export const CreatePage = () => {
       });
       setMessage("");
     }
-  }, [message, error]);
+  }, [message, error, toast, setMessage]);
 
   return (
     <Container maxW={"container.sm"}>
