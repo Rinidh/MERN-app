@@ -22,7 +22,7 @@ import { useProductStore } from "../store/product";
 import { ProductCard } from "./ProductCard";
 import { CustomSpinner } from "./CustomSpinner";
 
-export const HomePage = () => {
+export const HomePage = (): JSX.Element => {
   const { fetchProducts, products, error, isLoading, message, setMessage } =
     useProductStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,7 +35,7 @@ export const HomePage = () => {
   useEffect(() => {
     if (error) onOpen();
     else onClose();
-  }, [error]);
+  }, [error, onClose, onOpen]);
 
   useEffect(() => {
     if (message) {
@@ -56,7 +56,7 @@ export const HomePage = () => {
       });
       setMessage("");
     }
-  }, [message, error]);
+  }, [message, error, toast, setMessage]);
 
   return (
     <Container maxW={"container.xl"} p={10}>
