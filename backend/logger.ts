@@ -4,10 +4,20 @@ import "winston-mongodb";
 
 import type { Logger } from "winston";
 
+const { combine, timestamp, printf, errors } = winston.format;
+
+const customFormat = printf(({ level, message, timestamp, stack }) => {
+  return `${timestamp} - [${level}]: ${stack ?? message}`;
+});
+
 //CUSTOM LOGGER
 export const logger: Logger = winston.createLogger({
   level: "info",
-  format: winston.format.simple(),
+  format: combine(
+    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    errors({ stack: true }),
+    customFormat
+  ),
   transports: [
     new winston.transports.File({
       filename: "logs/errors.log",
