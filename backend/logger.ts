@@ -2,8 +2,10 @@ import winston from "winston";
 import "express-async-errors";
 import "winston-mongodb";
 
+import type { Logger } from "winston";
+
 //CUSTOM LOGGER
-export const logger = winston.createLogger({
+export const logger: Logger = winston.createLogger({
   level: "info",
   format: winston.format.simple(),
   transports: [
