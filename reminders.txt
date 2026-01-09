@@ -48,7 +48,7 @@ root/
 |  ├─ config/
 |  |   └─ db.js                            # mongo db connection using mongoose
 |  ├─ logger.js                            # winston logger
-│  └─ server.ts                            # Express bootstrap
+│  └─ server.js                            # Express bootstrap
 └─ package.json                            # Backend dependencies
 
 -----------
