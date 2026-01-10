@@ -8,6 +8,9 @@ import {
 
 const router = express.Router();
 
+/**
+ * Endpoint: /api/products
+ */
 router.get("/", getAllProducts);
 router.post("/", createProduct);
 router.put("/:id", updateProduct);
