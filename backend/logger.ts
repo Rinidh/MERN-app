@@ -28,7 +28,7 @@ export const logger: Logger = winston.createLogger({
       format: winston.format.simple(),
     }),
     new winston.transports.MongoDB({
-      db: "mongodb+srv://rinidhdhokia_db_user:qv7QrkWnYZw1YUx1@cluster0.s3sdw6b.mongodb.net/products?appName=Cluster0",
+      db: process.env.MONGO_URI,
       collection: "log",
       level: "warn",
     }),
