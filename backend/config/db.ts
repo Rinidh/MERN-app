@@ -5,6 +5,9 @@ export const connectDB = async (): Promise<void> => {
   const mongoURI = process.env.MONGO_URI;
 
   try {
+    if (!mongoURI)
+      throw new Error("No 'MONGO_URI' found in environment variables");
+
     const conn = await mongoose.connect(mongoURI);
     logger.info(`Connected to MongoDB : ${conn.connection.host}`);
   } catch (error: unknown) {

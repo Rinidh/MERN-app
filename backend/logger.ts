@@ -2,13 +2,40 @@ import winston from "winston";
 import "express-async-errors";
 import "winston-mongodb";
 
-import type { Logger } from "winston";
+import type { Logger, transport } from "winston";
 
 const { combine, timestamp, printf, errors } = winston.format;
 
 const customFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} - [${level}]: ${stack ?? message}`;
 });
+
+const transports: transport[] = [
+  new winston.transports.File({
+    filename: "logs/errors.log",
+    level: "error",
+  }),
+
+  new winston.transports.File({
+    filename: "logs/combined.log",
+  }),
+
+  new winston.transports.Console({
+    format: winston.format.simple(),
+  }),
+];
+
+const mongoUri = process.env.MONGO_URI;
+
+if (mongoUri) {
+  transports.push(
+    new winston.transports.MongoDB({
+      db: mongoUri,
+      collection: "log",
+      level: "warn",
+    })
+  );
+}
 
 //CUSTOM LOGGER
 export const logger: Logger = winston.createLogger({
@@ -18,21 +45,7 @@ export const logger: Logger = winston.createLogger({
     errors({ stack: true }),
     customFormat
   ),
-  transports: [
-    new winston.transports.File({
-      filename: "logs/errors.log",
-      level: "error", //only error level messages go into errors.log
-    }),
-    new winston.transports.File({ filename: "logs/combined.log" }), //all logs (info, warn and errors) using this custom logger go here
-    new winston.transports.Console({
-      format: winston.format.simple(),
-    }),
-    new winston.transports.MongoDB({
-      db: process.env.MONGO_URI,
-      collection: "log",
-      level: "warn",
-    }),
-  ],
+  transports,
 
   //PROCESS CATCHERS:
   exceptionHandlers: [
@@ -44,3 +57,8 @@ export const logger: Logger = winston.createLogger({
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
 });
+
+if (!mongoUri) {
+  logger.error("No 'MONGO_URI' found in environment variables");
+  process.exit(1);
+}
