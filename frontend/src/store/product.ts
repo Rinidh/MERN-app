@@ -18,7 +18,7 @@ export type Product = {
  */
 export type ProductInput = {
   name: string;
-  price: string | number; // can be string in HTMLInputElement.value otherwise always a number eg in product sent to/fetched from server
+  price: number | null;
   image: string;
 };
 
@@ -77,7 +77,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
 
     setState({ error: null, isLoading: true, message: "" });
 
-    if (!name?.trim() || !image?.trim() || price === undefined) {
+    if (!name?.trim() || !image?.trim() || price == undefined) {
       setState({ isLoading: false, error: "Please fill in all fields." });
       return;
     }

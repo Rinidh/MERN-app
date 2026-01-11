@@ -109,7 +109,10 @@ export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
               placeholder="Price"
               value={currentValues.price}
               onChange={(e) =>
-                setCurrentValues({ ...currentValues, price: e.target.value })
+                setCurrentValues({
+                  ...currentValues,
+                  price: Number(e.target.value),
+                })
               }
             />
             <Input
