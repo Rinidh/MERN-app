@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
   const __filename = fileURLToPath(import.meta.url); // __filename is path upto ".../backend/server.ts"
   const __dirname = path.dirname(__filename); // __dirname is path upto ".../backend"
 
-  const frontendDistPath = path.join(__dirname, "..", "/frontend/dist");
+  const frontendDistPath = path.join(__dirname, "..", "..", "/frontend/dist");
 
   app.use(express.static(frontendDistPath)); // serve all contents of frontend/ as a static assets stored in dist/ folder
   app.get("*", (_req: Request, res: Response, next: NextFunction) => {
