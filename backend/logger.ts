@@ -2,40 +2,13 @@ import winston from "winston";
 import "express-async-errors";
 import "winston-mongodb";
 
-import type { Logger, transport } from "winston";
+import type { Logger } from "winston";
 
 const { combine, timestamp, printf, errors } = winston.format;
 
 const customFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} - [${level}]: ${stack ?? message}`;
 });
-
-const transports: transport[] = [
-  new winston.transports.File({
-    filename: "logs/errors.log",
-    level: "error",
-  }),
-
-  new winston.transports.File({
-    filename: "logs/combined.log",
-  }),
-
-  new winston.transports.Console({
-    format: winston.format.simple(),
-  }),
-];
-
-const mongoUri = process.env.MONGO_URI;
-
-if (mongoUri) {
-  transports.push(
-    new winston.transports.MongoDB({
-      db: mongoUri,
-      collection: "log",
-      level: "warn",
-    })
-  );
-}
 
 //CUSTOM LOGGER
 export const logger: Logger = winston.createLogger({
@@ -45,7 +18,20 @@ export const logger: Logger = winston.createLogger({
     errors({ stack: true }),
     customFormat
   ),
-  transports,
+  transports: [
+    new winston.transports.File({
+      filename: "logs/errors.log",
+      level: "error",
+    }),
+
+    new winston.transports.File({
+      filename: "logs/combined.log",
+    }),
+
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    }),
+  ],
 
   //PROCESS CATCHERS:
   exceptionHandlers: [
@@ -58,7 +44,21 @@ export const logger: Logger = winston.createLogger({
   ],
 });
 
-if (!mongoUri) {
-  logger.error("No 'MONGO_URI' found in environment variables");
-  process.exit(1);
-}
+const addMongoDBTransport = () => {
+  const mongoUri = process.env.MONGO_URI;
+
+  if (mongoUri) {
+    logger.add(
+      new winston.transports.MongoDB({
+        db: mongoUri,
+        collection: "log",
+        level: "warn",
+      })
+    );
+  } else {
+    logger.error("No 'MONGO_URI' found in environment variables");
+    process.exit(1);
+    // throw new Error("No 'MONGO_URI' found in environment variables");
+  }
+};
+addMongoDBTransport();
