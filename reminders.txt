@@ -7,7 +7,7 @@ Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXX
 FEATURES TO ADD:
 - first create new branch "trunk", then migrate to TS
 - remove winston.format.simple() from Console transport if customFormat is getting overriden
-- 
+- ask ai gen REAME.md
 
 - backend tests
 - frontend tests
