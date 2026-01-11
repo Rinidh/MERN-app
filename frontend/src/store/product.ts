@@ -75,15 +75,17 @@ export const useProductStore = create<ProductStore>((setState) => ({
   createProduct: async (newProduct) => {
     const { name, price, image } = newProduct;
 
+    setState({ error: null, isLoading: true, message: "" });
+
     if (!name?.trim() || !image?.trim() || price === undefined) {
-      return { success: false, message: "Please fill in all fields." };
+      setState({ isLoading: false, error: "Please fill in all fields." });
+      return;
     }
 
     if (Number.isNaN(Number(price)) || Number(price) <= 0) {
-      return { success: false, message: "Price must be a valid number." };
+      setState({ isLoading: false, error: "Price must be a valid number." });
+      return;
     }
-
-    setState({ error: null, isLoading: true, message: "" });
 
     try {
       const res = await fetch("/api/products", {
