@@ -1,5 +1,6 @@
+import "./config/env.js";
+
 import express, { Response, Request, NextFunction } from "express";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -7,7 +8,6 @@ import { connectDB } from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
 import { logger } from "./logger.js";
 
-dotenv.config();
 const PORT = Number(process.env.PORT) || 5000;
 
 const app = express();
