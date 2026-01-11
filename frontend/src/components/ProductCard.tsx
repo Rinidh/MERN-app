@@ -28,9 +28,9 @@ type ProductCardProps = { product: Product };
 
 export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
   const [currentValues, setCurrentValues] = useState<ProductInput>({
-    name: product.name,
-    price: product.price,
-    image: product.image,
+    name: product.name || "",
+    price: product.price || null,
+    image: product.image || "",
   });
   const styles = useColorModeValue(
     {
