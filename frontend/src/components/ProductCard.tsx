@@ -29,7 +29,7 @@ type ProductCardProps = { product: Product };
 export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
   const [currentValues, setCurrentValues] = useState<ProductInput>({
     name: product.name || "",
-    price: product.price || null,
+    price: String(product.price) || "",
     image: product.image || "",
   });
   const styles = useColorModeValue(
@@ -47,7 +47,7 @@ export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
 
   const areSameValues =
     product.name === currentValues.name.trim() &&
-    product.price === Number(currentValues.price) && //
+    String(product.price) === currentValues.price && //
     product.image === currentValues.image.trim();
 
   return (
@@ -111,7 +111,7 @@ export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
               onChange={(e) =>
                 setCurrentValues({
                   ...currentValues,
-                  price: Number(e.target.value),
+                  price: e.target.value,
                 })
               }
             />

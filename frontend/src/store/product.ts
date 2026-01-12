@@ -18,7 +18,7 @@ export type Product = {
  */
 export type ProductInput = {
   name: string;
-  price: number | null;
+  price: string;
   image: string;
 };
 
@@ -77,7 +77,7 @@ export const useProductStore = create<ProductStore>((setState) => ({
 
     setState({ error: null, isLoading: true, message: "" });
 
-    if (!name?.trim() || !image?.trim() || price == undefined) {
+    if (!name?.trim() || !image?.trim() || !price?.trim()) {
       setState({ isLoading: false, error: "Please fill in all fields." });
       return;
     }
@@ -164,6 +164,12 @@ export const useProductStore = create<ProductStore>((setState) => ({
 
   updateProduct: async (pid, updatedProduct) => {
     setState({ error: null, message: "", isLoading: true });
+
+    if (updatedProduct.price && !Number.isNaN(Number(updatedProduct.price))) {
+      // if user optionally updates the price, he should use a valid number
+      setState({ error: "Price must be a valid number.", isLoading: false });
+      return;
+    }
 
     try {
       const res = await fetch(`/api/products/${pid}`, {

@@ -16,7 +16,7 @@ import type { ProductInput } from "../store/product";
 export const CreatePage = () => {
   const [fieldValues, setFieldValues] = useState<ProductInput>({
     name: "",
-    price: null,
+    price: "",
     image: "",
   });
   const { createProduct, error, isLoading, message, setMessage } =
@@ -36,7 +36,7 @@ export const CreatePage = () => {
         status: "success",
         isClosable: true,
       });
-      setFieldValues({ name: "", price: null, image: "" });
+      setFieldValues(() => ({ name: "", price: "", image: "" }));
       setMessage("");
     }
     if (error) {
@@ -77,11 +77,11 @@ export const CreatePage = () => {
                 type="number"
                 placeholder="Price"
                 name="price"
-                value={fieldValues.price}
+                value={fieldValues.price || ""}
                 onChange={(e) =>
                   setFieldValues({
                     ...fieldValues,
-                    price: Number(e.target.value),
+                    price: e.target.value,
                   })
                 }
               />
