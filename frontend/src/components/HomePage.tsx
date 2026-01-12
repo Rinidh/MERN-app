@@ -79,6 +79,7 @@ export const HomePage = (): JSX.Element => {
             lg: 3,
           }}
           spacing={10}
+          width={"full"}
         >
           {products.map((p) => (
             <ProductCard key={p._id} product={p} />
