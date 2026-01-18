@@ -55,6 +55,9 @@ describe("getAllProducts", () => {
     await getAllProducts(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) })
+    );
     expect(logger.error).toHaveBeenCalled();
   });
 });
