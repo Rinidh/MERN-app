@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Request, Response } from "express";
 
-import { getAllProducts } from "../controllers/product.controller.js";
+import {
+  createProduct,
+  getAllProducts,
+} from "../controllers/product.controller.js";
 
 import Product from "../models/product.model.js";
 import { logger } from "../logger.js";
@@ -59,5 +62,35 @@ describe("getAllProducts", () => {
       expect.objectContaining({ message: expect.any(String) })
     );
     expect(logger.error).toHaveBeenCalled();
+  });
+});
+
+describe("createProduct", () => {
+  it("returns 400 with message when fields are missing", async () => {
+    const req = {
+      body: { name: "", price: null, image: "" },
+    } as Request;
+    const res = mockResponse();
+
+    await createProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) })
+    );
+  });
+
+  it("returns 400 if price is invalid", async () => {
+    const req = {
+      body: { name: "valid name", price: -1, image: "valid image url" },
+    } as Request;
+    const res = mockResponse();
+
+    await createProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) })
+    );
   });
 });
