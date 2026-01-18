@@ -80,9 +80,12 @@ describe("createProduct", () => {
     );
   });
 
-  it("returns 400 if price is invalid", async () => {
+  it.each([
+    ["NaN price", "xyz"],
+    ["negative  price", -1],
+  ])("returns 400 with message if price is %s", async (_, price) => {
     const req = {
-      body: { name: "valid name", price: -1, image: "valid image url" },
+      body: { name: "valid name", price, image: "valid image url" },
     } as Request;
     const res = mockResponse();
 
