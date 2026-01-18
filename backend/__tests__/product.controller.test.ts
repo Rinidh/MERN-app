@@ -66,10 +66,12 @@ describe("getAllProducts", () => {
 });
 
 describe("createProduct", () => {
-  it("returns 400 with message when fields are missing", async () => {
-    const req = {
-      body: { name: "", price: null, image: "" },
-    } as Request;
+  it.each([
+    ["name", { name: "", price: 10, image: "valid image url" }],
+    ["price", { name: "valid name", price: null, image: "valid image url" }],
+    ["image", { name: "valid name", price: null, image: "" }],
+  ])("returns 400 with message when %s field is missing", async (_, body) => {
+    const req = { body } as Request;
     const res = mockResponse();
 
     await createProduct(req, res);
