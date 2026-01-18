@@ -10,7 +10,7 @@ import { logger } from "./logger.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 
-const app = express();
+export const app = express();
 
 app.use(express.json()); // Middleware to parse JSON bodies in req.body
 app.use("/api/products", productRoutes);
@@ -41,4 +41,7 @@ const startServer = async (): Promise<void> => {
   }
 };
 
-startServer();
+if (process.env.NODE_ENV !== "test") {
+  // server should not start listening if is to be used by supertest agent
+  startServer();
+}

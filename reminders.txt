@@ -2,16 +2,12 @@
 
 
 -----------------------
-Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
+Baseline Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
 
 FEATURES TO ADD:
-- first create new branch "trunk", then migrate to TS
-- remove winston.format.simple() from Console transport if customFormat is getting overriden
-- ask ai gen REAME.md
-
 - backend tests
 - frontend tests
-- validation with zod in each .model.js file
+- ask ai gen REAME.md
 - expand with more features: services, users, 
 
 ---------
