@@ -1,14 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Request, Response } from "express";
 import { saveMock, ProductMock } from "../models/product.model.mock.js";
 
 import {
   createProduct,
   getAllProducts,
+  updateProduct,
 } from "../controllers/product.controller.js";
 
 import Product from "../models/product.model.js";
 import { logger } from "../logger.js";
+import mongoose from "mongoose";
 
 // MOCKS
 vi.mock("../models/product.model.js", () => ({
@@ -19,6 +21,7 @@ vi.mock("../logger.js", () => ({
   logger: {
     error: vi.fn(),
     info: vi.fn(),
+    warn: vi.fn(),
   },
 }));
 
@@ -142,6 +145,45 @@ describe("createProduct", () => {
       expect.objectContaining({
         message: expect.any(String),
       }),
+    );
+  });
+});
+
+describe("updateProduct", () => {
+  beforeEach(() => {
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(true);
+  });
+
+  it("returns 404 for invalid id", async () => {
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
+
+    const req = {
+      params: { id: "invalid-id" },
+      body: { name: "valid name updated" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    await updateProduct(req, res);
+
+    expect(logger.warn).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("returns 400 with message if no fields supplied to update", async () => {
+    const req = {
+      params: { id: "valid-id" },
+      body: {},
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    await updateProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
     );
   });
 });
