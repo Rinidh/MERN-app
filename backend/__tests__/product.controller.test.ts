@@ -56,7 +56,7 @@ describe("getAllProducts", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) })
+      expect.objectContaining({ message: expect.any(String) }),
     );
     expect(logger.error).toHaveBeenCalled();
   });
@@ -75,7 +75,7 @@ describe("createProduct", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) })
+      expect.objectContaining({ message: expect.any(String) }),
     );
   });
 
@@ -92,7 +92,7 @@ describe("createProduct", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) })
+      expect.objectContaining({ message: expect.any(String) }),
     );
   });
 
@@ -115,12 +115,14 @@ describe("createProduct", () => {
 
     await createProduct(req, res);
 
+    expect(ProductMock).toHaveBeenCalled();
+    expect(saveMock).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         data: createdProduct,
         message: expect.any(String),
-      })
+      }),
     );
   });
 });
