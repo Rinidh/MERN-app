@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Request, Response } from "express";
+import { saveMock, ProductMock } from "../models/product.model.mock.js";
 
 import {
   createProduct,
@@ -11,11 +12,7 @@ import { logger } from "../logger.js";
 
 // MOCKS
 vi.mock("../models/product.model.js", () => ({
-  default: {
-    find: vi.fn(),
-    findByIdAndUpdate: vi.fn(),
-    findByIdAndDelete: vi.fn(),
-  },
+  default: ProductMock,
 }));
 
 vi.mock("../logger.js", () => ({
@@ -96,6 +93,34 @@ describe("createProduct", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ message: expect.any(String) })
+    );
+  });
+
+  it("creates new product and returns 201 with data and message", async () => {
+    const createdProduct = {
+      _id: "mock-id",
+      name: "valid name",
+      price: 10,
+      image: "valid image url",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const req = {
+      body: { name: "valid name", image: "valid image url", price: 10 },
+    } as Request;
+    const res = mockResponse();
+
+    vi.mocked(saveMock).mockResolvedValue(createdProduct);
+
+    await createProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: createdProduct,
+        message: expect.any(String),
+      })
     );
   });
 });
