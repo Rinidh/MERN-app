@@ -125,4 +125,23 @@ describe("createProduct", () => {
       }),
     );
   });
+
+  it("returns 500 with message on db error", async () => {
+    const req = {
+      body: { name: "valid name", image: "valid image url", price: 10 },
+    } as Request;
+    const res = mockResponse();
+
+    vi.mocked(saveMock).mockRejectedValue(new Error("failed to save"));
+
+    await createProduct(req, res);
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+      }),
+    );
+  });
 });
