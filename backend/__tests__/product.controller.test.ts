@@ -4,6 +4,7 @@ import { saveMock, ProductMock } from "../models/product.model.mock.js";
 
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   updateProduct,
 } from "../controllers/product.controller.js";
@@ -234,6 +235,64 @@ describe("updateProduct", () => {
       expect.objectContaining({
         message: expect.any(String),
       }),
+    );
+  });
+});
+
+describe("deleteProduct", () => {
+  beforeEach(() => {
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(true);
+  });
+
+  it("fails with 404 and a message if invalid ID supplied", async () => {
+    const req = {
+      params: { id: "invalid-id" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
+
+    await deleteProduct(req, res);
+
+    expect(logger.warn).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("deletes product and responds with 200 and message", async () => {
+    const req = {
+      params: { id: "valid-id" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    vi.mocked(Product.findByIdAndDelete).mockResolvedValue(null);
+
+    await deleteProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("returns 500 with message if db error", async () => {
+    const req = {
+      params: { id: "valid-id" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    vi.mocked(Product.findByIdAndDelete).mockRejectedValue(
+      new Error("failed to delete"),
+    );
+
+    await deleteProduct(req, res);
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
     );
   });
 });
