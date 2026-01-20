@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Request, Response } from "express";
-import { saveMock, ProductMock } from "../models/product.model.mock.js";
+import {
+  saveMock,
+  ProductMock,
+  deleteOrFailMock,
+  updateOrFailMock,
+} from "../models/product.model.mock.js";
 
 import {
   createProduct,
@@ -176,7 +181,7 @@ describe("updateProduct", () => {
 
     expect(logger.warn).toHaveBeenCalled();
     expectResponse(res, 404);
-    expect(Product.findByIdAndUpdate).not.toHaveBeenCalled();
+    expect(updateOrFailMock).not.toHaveBeenCalled();
   });
 
   it("returns 400 with message if no fields supplied to update", async () => {
@@ -189,7 +194,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expectResponse(res, 400);
-    expect(Product.findByIdAndUpdate).not.toHaveBeenCalled();
+    expect(updateOrFailMock).not.toHaveBeenCalled();
   });
 
   it("updates product and returns 200 with updated product and message", async () => {
@@ -207,12 +212,12 @@ describe("updateProduct", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    vi.mocked(Product.findByIdAndUpdate).mockResolvedValue(updatedProduct); /// try direct Product.findByIdAndUpdate.mockImplementation...
+    vi.mocked(updateOrFailMock).mockResolvedValue(updatedProduct); /// try direct Product.findByIdAndUpdate.mockImplementation...
 
     await updateProduct(req, res);
 
     expectResponse(res, 200, updatedProduct);
-    expect(Product.findByIdAndUpdate).toHaveBeenCalled();
+    expect(updateOrFailMock).toHaveBeenCalled();
   });
 
   it("returns 500 when db error", async () => {
@@ -222,7 +227,7 @@ describe("updateProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    vi.mocked(Product.findByIdAndUpdate).mockRejectedValue(
+    vi.mocked(updateOrFailMock).mockRejectedValue(
       new Error("failed to update"),
     );
 
@@ -250,7 +255,7 @@ describe("deleteProduct", () => {
 
     expect(logger.warn).toHaveBeenCalled();
     expectResponse(res, 404);
-    expect(Product.findByIdAndDelete).not.toHaveBeenCalled();
+    expect(deleteOrFailMock).not.toHaveBeenCalled();
   });
 
   it("deletes product and responds with 200 and message", async () => {
@@ -259,7 +264,7 @@ describe("deleteProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    vi.mocked(Product.findByIdAndDelete).mockResolvedValue(null);
+    vi.mocked(deleteOrFailMock).mockResolvedValue(null);
 
     await deleteProduct(req, res);
 
@@ -272,7 +277,7 @@ describe("deleteProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    vi.mocked(Product.findByIdAndDelete).mockRejectedValue(
+    vi.mocked(deleteOrFailMock).mockRejectedValue(
       new Error("failed to delete"),
     );
 
