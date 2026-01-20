@@ -4,6 +4,7 @@ import { saveMock, ProductMock } from "../models/product.model.mock.js";
 
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   updateProduct,
 } from "../controllers/product.controller.js";
@@ -25,7 +26,7 @@ vi.mock("../logger.js", () => ({
   },
 }));
 
-const mockResponse = (): Response => {
+const createRes = (): Response => {
   const res = {} as Response;
   res.status = vi.fn().mockReturnValue(res);
   res.json = vi.fn().mockReturnValue(res);
@@ -36,7 +37,7 @@ const mockResponse = (): Response => {
 describe("getAllProducts", () => {
   it("returns 200 and products", async () => {
     const req = {} as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     const mockProducts = [
       { name: "test product name", price: 1, image: "test product image" },
@@ -51,7 +52,7 @@ describe("getAllProducts", () => {
 
   it("returns 500 with message on error", async () => {
     const req = {} as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(Product.find).mockRejectedValue(new Error("DB Error"));
 
@@ -72,7 +73,7 @@ describe("createProduct", () => {
     ["image", { name: "valid name", price: null, image: "" }],
   ])("returns 400 with message when %s field is missing", async (_, body) => {
     const req = { body } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     await createProduct(req, res);
 
@@ -89,7 +90,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", price, image: "valid image url" },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     await createProduct(req, res);
 
@@ -112,7 +113,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", image: "valid image url", price: 10 },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(saveMock).mockResolvedValue(createdProduct);
 
@@ -133,7 +134,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", image: "valid image url", price: 10 },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(saveMock).mockRejectedValue(new Error("failed to save"));
 
@@ -161,7 +162,7 @@ describe("updateProduct", () => {
       params: { id: "invalid-id" },
       body: { name: "valid name updated" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     await updateProduct(req, res);
 
@@ -177,11 +178,119 @@ describe("updateProduct", () => {
       params: { id: "valid-id" },
       body: {},
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     await updateProduct(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("updates product and returns 200 with updated product and message", async () => {
+    const req = {
+      params: { id: "valid-id" },
+      body: { name: "valid name updated" },
+    } as Request<{ id: string }>;
+    const res = createRes();
+
+    const updatedProduct = {
+      _id: "valid-id",
+      name: "valid name updated",
+      price: 10,
+      image: "valid image url",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    vi.mocked(Product.findByIdAndUpdate).mockResolvedValue(updatedProduct); /// try direct Product.findByIdAndUpdate.mockImplementation...
+
+    await updateProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+        data: updatedProduct,
+      }),
+    );
+  });
+
+  it("returns 500 when db error", async () => {
+    const req = {
+      params: { id: "valid-id" },
+      body: { name: "valid name updated" },
+    } as Request<{ id: string }>;
+    const res = createRes();
+
+    vi.mocked(Product.findByIdAndUpdate).mockRejectedValue(
+      new Error("failed to update"),
+    );
+
+    await updateProduct(req, res);
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+      }),
+    );
+  });
+});
+
+describe("deleteProduct", () => {
+  beforeEach(() => {
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(true);
+  });
+
+  it("fails with 404 and a message if invalid ID supplied", async () => {
+    const req = {
+      params: { id: "invalid-id" },
+    } as Request<{ id: string }>;
+    const res = createRes();
+
+    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
+
+    await deleteProduct(req, res);
+
+    expect(logger.warn).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("deletes product and responds with 200 and message", async () => {
+    const req = {
+      params: { id: "valid-id" },
+    } as Request<{ id: string }>;
+    const res = createRes();
+
+    vi.mocked(Product.findByIdAndDelete).mockResolvedValue(null);
+
+    await deleteProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.any(String) }),
+    );
+  });
+
+  it("returns 500 with message if db error", async () => {
+    const req = {
+      params: { id: "valid-id" },
+    } as Request<{ id: string }>;
+    const res = createRes();
+
+    vi.mocked(Product.findByIdAndDelete).mockRejectedValue(
+      new Error("failed to delete"),
+    );
+
+    await deleteProduct(req, res);
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ message: expect.any(String) }),
     );
