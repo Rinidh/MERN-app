@@ -101,6 +101,7 @@ describe("createProduct", () => {
     await createProduct(req, res);
 
     expectResponse(res, 400);
+    expect(ProductMock).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -115,6 +116,7 @@ describe("createProduct", () => {
     await createProduct(req, res);
 
     expectResponse(res, 400);
+    expect(ProductMock).not.toHaveBeenCalled();
   });
 
   it("creates new product and returns 201 with data and message", async () => {
@@ -174,6 +176,7 @@ describe("updateProduct", () => {
 
     expect(logger.warn).toHaveBeenCalled();
     expectResponse(res, 404);
+    expect(Product.findByIdAndUpdate).not.toHaveBeenCalled();
   });
 
   it("returns 400 with message if no fields supplied to update", async () => {
@@ -186,6 +189,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expectResponse(res, 400);
+    expect(Product.findByIdAndUpdate).not.toHaveBeenCalled();
   });
 
   it("updates product and returns 200 with updated product and message", async () => {
@@ -208,6 +212,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expectResponse(res, 200, updatedProduct);
+    expect(Product.findByIdAndUpdate).toHaveBeenCalled();
   });
 
   it("returns 500 when db error", async () => {
@@ -245,6 +250,7 @@ describe("deleteProduct", () => {
 
     expect(logger.warn).toHaveBeenCalled();
     expectResponse(res, 404);
+    expect(Product.findByIdAndDelete).not.toHaveBeenCalled();
   });
 
   it("deletes product and responds with 200 and message", async () => {
