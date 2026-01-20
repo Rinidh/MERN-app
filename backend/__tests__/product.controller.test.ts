@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Request, Response } from "express";
 import { saveMock, ProductMock } from "../models/product.model.mock.js";
 
@@ -52,6 +52,13 @@ const expectResponse = (
   expect(res.status).toHaveBeenCalledWith(statusCode);
   expect(res.json).toHaveBeenCalledWith(expect.objectContaining(resJsonObject));
 };
+
+// GLOBAL SETUP
+const isValidObjectIdSpy = vi.spyOn(mongoose, "isValidObjectId");
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 // TESTS
 describe("getAllProducts", () => {
@@ -151,11 +158,11 @@ describe("createProduct", () => {
 
 describe("updateProduct", () => {
   beforeEach(() => {
-    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(true);
+    isValidObjectIdSpy.mockReturnValue(true);
   });
 
   it("returns 404 for invalid id", async () => {
-    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
+    isValidObjectIdSpy.mockReturnValue(false);
 
     const req = {
       params: { id: "invalid-id" },
@@ -223,7 +230,7 @@ describe("updateProduct", () => {
 
 describe("deleteProduct", () => {
   beforeEach(() => {
-    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(true);
+    isValidObjectIdSpy.mockReturnValue(true);
   });
 
   it("fails with 404 and a message if invalid ID supplied", async () => {
@@ -232,7 +239,7 @@ describe("deleteProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
+    isValidObjectIdSpy.mockReturnValue(false);
 
     await deleteProduct(req, res);
 
