@@ -186,4 +186,54 @@ describe("updateProduct", () => {
       expect.objectContaining({ message: expect.any(String) }),
     );
   });
+
+  it("updates product and returns 200 with updated product and message", async () => {
+    const req = {
+      params: { id: "valid-id" },
+      body: { name: "valid name updated" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    const updatedProduct = {
+      _id: "valid-id",
+      name: "valid name updated",
+      price: 10,
+      image: "valid image url",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    vi.mocked(Product.findByIdAndUpdate).mockResolvedValue(updatedProduct); /// try direct Product.findByIdAndUpdate.mockImplementation...
+
+    await updateProduct(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+        data: updatedProduct,
+      }),
+    );
+  });
+
+  it("returns 500 when db error", async () => {
+    const req = {
+      params: { id: "valid-id" },
+      body: { name: "valid name updated" },
+    } as Request<{ id: string }>;
+    const res = mockResponse();
+
+    vi.mocked(Product.findByIdAndUpdate).mockRejectedValue(
+      new Error("failed to update"),
+    );
+
+    await updateProduct(req, res);
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+      }),
+    );
+  });
 });
