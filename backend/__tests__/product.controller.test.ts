@@ -26,11 +26,31 @@ vi.mock("../logger.js", () => ({
   },
 }));
 
+// HELPERS
 const createRes = (): Response => {
   const res = {} as Response;
   res.status = vi.fn().mockReturnValue(res);
   res.json = vi.fn().mockReturnValue(res);
   return res;
+};
+
+type ExpectedJson = {
+  message?: string;
+  data?: unknown;
+};
+
+const expectResponse = (
+  res: Response,
+  statusCode: number,
+  data?: unknown,
+  noMessage?: boolean,
+) => {
+  let resJsonObject: ExpectedJson = {};
+  if (data !== undefined) resJsonObject.data = data;
+  if (!noMessage) resJsonObject.message = expect.any(String);
+
+  expect(res.status).toHaveBeenCalledWith(statusCode);
+  expect(res.json).toHaveBeenCalledWith(expect.objectContaining(resJsonObject));
 };
 
 // TESTS
@@ -46,8 +66,7 @@ describe("getAllProducts", () => {
 
     await getAllProducts(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ data: mockProducts });
+    expectResponse(res, 200, mockProducts, true);
   });
 
   it("returns 500 with message on error", async () => {
@@ -58,10 +77,7 @@ describe("getAllProducts", () => {
 
     await getAllProducts(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 500);
     expect(logger.error).toHaveBeenCalled();
   });
 });
@@ -77,10 +93,7 @@ describe("createProduct", () => {
 
     await createProduct(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 400);
   });
 
   it.each([
@@ -94,10 +107,7 @@ describe("createProduct", () => {
 
     await createProduct(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 400);
   });
 
   it("creates new product and returns 201 with data and message", async () => {
@@ -121,13 +131,7 @@ describe("createProduct", () => {
 
     expect(ProductMock).toHaveBeenCalled();
     expect(saveMock).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: createdProduct,
-        message: expect.any(String),
-      }),
-    );
+    expectResponse(res, 201, createdProduct);
   });
 
   it("returns 500 with message on db error", async () => {
@@ -141,12 +145,7 @@ describe("createProduct", () => {
     await createProduct(req, res);
 
     expect(logger.error).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: expect.any(String),
-      }),
-    );
+    expectResponse(res, 500);
   });
 });
 
@@ -167,10 +166,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expect(logger.warn).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 404);
   });
 
   it("returns 400 with message if no fields supplied to update", async () => {
@@ -182,10 +178,7 @@ describe("updateProduct", () => {
 
     await updateProduct(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 400);
   });
 
   it("updates product and returns 200 with updated product and message", async () => {
@@ -207,13 +200,7 @@ describe("updateProduct", () => {
 
     await updateProduct(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: expect.any(String),
-        data: updatedProduct,
-      }),
-    );
+    expectResponse(res, 200, updatedProduct);
   });
 
   it("returns 500 when db error", async () => {
@@ -230,12 +217,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expect(logger.error).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: expect.any(String),
-      }),
-    );
+    expectResponse(res, 500);
   });
 });
 
@@ -255,10 +237,7 @@ describe("deleteProduct", () => {
     await deleteProduct(req, res);
 
     expect(logger.warn).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 404);
   });
 
   it("deletes product and responds with 200 and message", async () => {
@@ -271,10 +250,7 @@ describe("deleteProduct", () => {
 
     await deleteProduct(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 200);
   });
 
   it("returns 500 with message if db error", async () => {
@@ -290,9 +266,6 @@ describe("deleteProduct", () => {
     await deleteProduct(req, res);
 
     expect(logger.error).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.any(String) }),
-    );
+    expectResponse(res, 500);
   });
 });
