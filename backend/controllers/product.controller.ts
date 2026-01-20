@@ -12,7 +12,7 @@ import { logger } from "../logger.js";
  */
 export const getAllProducts = async (
   _req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const products: ProductDocument[] = await Product.find({});
@@ -28,7 +28,7 @@ export const getAllProducts = async (
  */
 export const createProduct = async (
   req: Request<{}, {}, ProductPayload>,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const { name, price, image } = req.body;
 
@@ -64,7 +64,7 @@ export const createProduct = async (
  */
 export const updateProduct = async (
   req: Request<{ id: string }, {}, Partial<ProductPayload>>,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const productId = req.params.id;
   const fields = req.body;
@@ -86,7 +86,7 @@ export const updateProduct = async (
     const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
       new: true,
       runValidators: true,
-    });
+    }).orFail();
     res
       .status(200)
       .json({ data: updatedProduct, message: "Product updated successfully" });
@@ -101,7 +101,7 @@ export const updateProduct = async (
  */
 export const deleteProduct = async (
   req: Request<{ id: string }>,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const productId = req.params.id;
 
@@ -112,7 +112,7 @@ export const deleteProduct = async (
   }
 
   try {
-    await Product.findByIdAndDelete(productId);
+    await Product.findByIdAndDelete(productId).orFail();
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error: unknown) {
     logger.error("Error deleting product:", error);
