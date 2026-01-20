@@ -26,7 +26,7 @@ vi.mock("../logger.js", () => ({
   },
 }));
 
-const mockResponse = (): Response => {
+const createRes = (): Response => {
   const res = {} as Response;
   res.status = vi.fn().mockReturnValue(res);
   res.json = vi.fn().mockReturnValue(res);
@@ -37,7 +37,7 @@ const mockResponse = (): Response => {
 describe("getAllProducts", () => {
   it("returns 200 and products", async () => {
     const req = {} as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     const mockProducts = [
       { name: "test product name", price: 1, image: "test product image" },
@@ -52,7 +52,7 @@ describe("getAllProducts", () => {
 
   it("returns 500 with message on error", async () => {
     const req = {} as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(Product.find).mockRejectedValue(new Error("DB Error"));
 
@@ -73,7 +73,7 @@ describe("createProduct", () => {
     ["image", { name: "valid name", price: null, image: "" }],
   ])("returns 400 with message when %s field is missing", async (_, body) => {
     const req = { body } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     await createProduct(req, res);
 
@@ -90,7 +90,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", price, image: "valid image url" },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     await createProduct(req, res);
 
@@ -113,7 +113,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", image: "valid image url", price: 10 },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(saveMock).mockResolvedValue(createdProduct);
 
@@ -134,7 +134,7 @@ describe("createProduct", () => {
     const req = {
       body: { name: "valid name", image: "valid image url", price: 10 },
     } as Request;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(saveMock).mockRejectedValue(new Error("failed to save"));
 
@@ -162,7 +162,7 @@ describe("updateProduct", () => {
       params: { id: "invalid-id" },
       body: { name: "valid name updated" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     await updateProduct(req, res);
 
@@ -178,7 +178,7 @@ describe("updateProduct", () => {
       params: { id: "valid-id" },
       body: {},
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     await updateProduct(req, res);
 
@@ -193,7 +193,7 @@ describe("updateProduct", () => {
       params: { id: "valid-id" },
       body: { name: "valid name updated" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     const updatedProduct = {
       _id: "valid-id",
@@ -221,7 +221,7 @@ describe("updateProduct", () => {
       params: { id: "valid-id" },
       body: { name: "valid name updated" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(Product.findByIdAndUpdate).mockRejectedValue(
       new Error("failed to update"),
@@ -248,7 +248,7 @@ describe("deleteProduct", () => {
     const req = {
       params: { id: "invalid-id" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.spyOn(mongoose, "isValidObjectId").mockReturnValue(false);
 
@@ -265,7 +265,7 @@ describe("deleteProduct", () => {
     const req = {
       params: { id: "valid-id" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(Product.findByIdAndDelete).mockResolvedValue(null);
 
@@ -281,7 +281,7 @@ describe("deleteProduct", () => {
     const req = {
       params: { id: "valid-id" },
     } as Request<{ id: string }>;
-    const res = mockResponse();
+    const res = createRes();
 
     vi.mocked(Product.findByIdAndDelete).mockRejectedValue(
       new Error("failed to delete"),
