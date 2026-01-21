@@ -36,18 +36,23 @@ root/
 |  ├─ package.json                         # frontend dependencies
 |  ├─ README.md
 |  ├─ tsconfig.json
-|  └─ vite.config.js                       # Proxy + build config
+|  └─ vite.config.ts                       # Proxy + build config
 ├─ backend/
+│  ├─ __tests__/                           # tests for backend/
+|  |  └─ product.controller.test.ts
 │  ├─ models/                              # Mongoose schemas
-|  |  └─ product.model.js
+|  |  ├─ product.controller.mock.ts        # exports ProductMock for use in tests
+|  |  └─ product.model.ts
 │  ├─ routes/                              # Express routes
-|  |  └─ product.route.js
+|  |  └─ product.route.ts
 │  ├─ controllers/                         
-|  |  └─ product.controller.js             # Request handlers for create, update, delete and get for domain of "product"
+|  |  └─ product.controller.ts             # Request handlers for create, update, delete and get for domain of "product"
 |  ├─ config/
-|  |   └─ db.js                            # mongo db connection using mongoose
-|  ├─ logger.js                            # winston logger
-│  └─ server.js                            # Express bootstrap
+|  |   └─ db.ts                            # mongo db connection using mongoose
+|  ├─ tsconfig.json                        
+|  ├─ vitest.config.ts                      
+|  ├─ logger.ts                            # winston logger
+│  └─ server.ts                            # Express bootstrap
 └─ package.json                            # Backend dependencies
 
 -----------
