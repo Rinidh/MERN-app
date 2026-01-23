@@ -6,6 +6,7 @@ import router from "../routes/product.route.js";
 import {
   createProduct,
   getAllProducts,
+  updateProduct,
 } from "../controllers/product.controller.js";
 
 vi.mock("../controllers/product.controller.js", () => ({
@@ -31,11 +32,11 @@ describe("product routes", () => {
   it("GET /api/products calls getAllProducts", async () => {
     const response = await request(app).get("/api/products");
 
-    expect(getAllProducts).toHaveBeenCalledOnce();
     expect(response.status).toEqual(200);
     expect(response.body).toEqual(
       expect.objectContaining({ message: "getAllProducts was called" }),
     );
+    expect(getAllProducts).toHaveBeenCalledOnce();
   });
 
   it("POST /api/products calls createProduct", async () => {
@@ -43,10 +44,27 @@ describe("product routes", () => {
       .post("/api/products")
       .send({ name: "valid name", price: 10, image: "valid image url" });
 
-    expect(createProduct).toHaveBeenCalledOnce();
     expect(response.status).toEqual(201);
     expect(response.body).toEqual(
       expect.objectContaining({ message: "createProduct was called" }),
     );
+    expect(createProduct).toHaveBeenCalledOnce();
+  });
+
+  it("PUT '/api/products/:id' calls updateProduct", async () => {
+    const response = await request(app)
+      .post("/api/products/123")
+      .send({ name: "updated name" });
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual(
+      expect.objectContaining({ message: "updateProduct was called" }),
+    );
+    expect(updateProduct).toHaveBeenCalledOnce();
+
+    // verify if id param was forwarded in 'req' object passed to controller as 1st arg
+    const reqObject = vi.mocked(updateProduct).mock.calls[0][0]; // the 1st arg of the recent call above
+    const id = reqObject.params.id;
+    expect(id).toEqual(123);
   });
 });
