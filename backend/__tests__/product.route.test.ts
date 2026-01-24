@@ -72,4 +72,18 @@ describe("product routes", () => {
     const id = reqObject.params.id;
     expect(id).toEqual("123");
   });
+
+  it("DELETE '/api/products/:id' calls deleteProduct", async () => {
+    const response = await request(app).delete("/api/products/789");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(
+      expect.objectContaining({ message: "deleteProduct was called" }),
+    );
+    expect(deleteProduct).toHaveBeenCalledOnce();
+
+    const reqObject = vi.mocked(deleteProduct).mock.calls[0][0];
+    const id = reqObject.params.id;
+    expect(id).toBe("789");
+  });
 });
