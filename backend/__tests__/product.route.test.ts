@@ -5,6 +5,7 @@ import request from "supertest";
 import router from "../routes/product.route.js";
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   updateProduct,
 } from "../controllers/product.controller.js";
@@ -16,8 +17,12 @@ vi.mock("../controllers/product.controller.js", () => ({
   createProduct: vi.fn((req, res) => {
     res.status(201).json({ message: "createProduct was called" });
   }),
-  updateProduct: vi.fn(),
-  deleteProduct: vi.fn(),
+  updateProduct: vi.fn((req, res) => {
+    res.status(200).json({ message: "updateProduct was called" });
+  }),
+  deleteProduct: vi.fn((req, res) => {
+    res.status(200).json({ message: "deleteProduct was called" });
+  }),
 }));
 
 describe("product routes", () => {
@@ -53,7 +58,7 @@ describe("product routes", () => {
 
   it("PUT '/api/products/:id' calls updateProduct", async () => {
     const response = await request(app)
-      .post("/api/products/123")
+      .put("/api/products/123")
       .send({ name: "updated name" });
 
     expect(response.status).toEqual(200);
@@ -65,6 +70,6 @@ describe("product routes", () => {
     // verify if id param was forwarded in 'req' object passed to controller as 1st arg
     const reqObject = vi.mocked(updateProduct).mock.calls[0][0]; // the 1st arg of the recent call above
     const id = reqObject.params.id;
-    expect(id).toEqual(123);
+    expect(id).toEqual("123");
   });
 });
