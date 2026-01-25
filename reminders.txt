@@ -13,47 +13,78 @@ FEATURES TO ADD:
 ---------
 Project Folder Structure Tree:
 
-root/
-├─ frontend/                               # React + Vite app
-│  ├─ src/
-│  │  ├─ components/                       # Reusable UI components
-|  │  │  ├─ CreatePage.tsx
-|  │  │  ├─ CustomSpinner.tsx
-|  │  │  ├─ HomePage.tsx
-|  │  │  ├─ Navbar.tsx
-|  │  │  └─ ProductCard.tsx
-│  │  ├─ pages/                            # Route-level components
-│  │  ├─ store/                            # Zustand stores
-|  │  │  └─ product.ts
-│  │  ├─ util/                             
-|  │  │  └─ index.ts                       # contains helper functions like safeParseJson()
-│  │  ├─ App.css
-│  │  ├─ App.jsx
-│  │  ├─ index.css
-│  │  └─ main.tsx                          # App entry point
-|  ├─ eslint.config.js
-|  ├─ index.html
-|  ├─ package.json                         # frontend dependencies
-|  ├─ README.md
-|  ├─ tsconfig.json
-|  └─ vite.config.ts                       # Proxy + build config
-├─ backend/
-│  ├─ __tests__/                           # tests for backend/
-|  |  └─ product.controller.test.ts
-│  ├─ models/                              # Mongoose schemas
-|  |  ├─ product.controller.mock.ts        # exports ProductMock for use in tests
-|  |  └─ product.model.ts
-│  ├─ routes/                              # Express routes
-|  |  └─ product.route.ts
-│  ├─ controllers/                         
-|  |  └─ product.controller.ts             # Request handlers for create, update, delete and get for domain of "product"
-|  ├─ config/
-|  |   └─ db.ts                            # mongo db connection using mongoose
-|  ├─ tsconfig.json                        
-|  ├─ vitest.config.ts                      
-|  ├─ logger.ts                            # winston logger
-│  └─ server.ts                            # Express bootstrap
-└─ package.json                            # Backend dependencies
+C:\Users\lenovo\documents\projects\mern-app
+├── backend
+|  ├── config
+|  |  ├── db.ts
+|  |  └── env.ts
+|  ├── controllers
+|  |  └── product.controller.ts
+|  ├── dist
+|  |  ├── config
+|  |  |  ├── db.js
+|  |  |  └── env.js
+|  |  ├── controllers
+|  |  |  └── product.controller.js
+|  |  ├── logger.js  # sets up winston logger
+|  |  ├── models
+|  |  |  └── product.model.js
+|  |  ├── routes
+|  |  |  └── product.route.js
+|  |  └── server.js
+|  ├── logger.ts
+|  ├── models
+|  |  ├── product.model.mock.ts  # this file exports ProductMock for use in tests
+|  |  └── product.model.ts
+|  ├── routes
+|  |  └── product.route.ts
+|  ├── server.ts
+|  ├── tsconfig.json
+|  ├── vitest.config.ts
+|  └── __tests__
+|     ├── product.controller.test.ts
+|     ├── product.route.test.ts
+|     └── setup.ts
+├── frontend
+|  ├── dist
+|  |  ├── assets
+|  |  |  └── index-rOJyzkxi.js
+|  |  └── index.html
+|  ├── eslint.config.js
+|  ├── index.html
+|  ├── package-lock.json
+|  ├── package.json
+|  ├── README.md
+|  ├── src
+|  |  ├── App.css
+|  |  ├── App.tsx
+|  |  ├── assets
+|  |  |  ├── react.svg
+|  |  |  └── vite.svg
+|  |  ├── components
+|  |  |  ├── CreatePage.tsx
+|  |  |  ├── CustomSpinner.tsx
+|  |  |  ├── HomePage.tsx
+|  |  |  ├── Navbar.tsx
+|  |  |  └── ProductCard.tsx
+|  |  ├── index.css
+|  |  ├── main.tsx
+|  |  ├── pages
+|  |  ├── store
+|  |  |  └── product.ts
+|  |  └── util
+|  |     └── index.ts
+|  ├── tsconfig.json
+|  └── vite.config.js
+├── logs
+|  ├── combined.log
+|  ├── errors.log
+|  ├── exceptions.log
+|  └── rejections.log
+├── package-lock.json
+├── package.json
+└── reminders.txt
+
 
 -----------
 

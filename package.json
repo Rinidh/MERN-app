@@ -10,7 +10,8 @@
     "build:frontend": "npm run build --prefix frontend",
     "start": "cross-env NODE_ENV=production node backend/dist/server.js",
     "test": "vitest",
-    "test:backend": "vitest backend"
+    "test:backend": "vitest backend",
+    "expt": "tsx backend/expt.ts"
   },
   "type": "module",
   "keywords": [],
