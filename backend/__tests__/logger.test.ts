@@ -47,12 +47,29 @@ describe("logger", () => {
   });
 
   it("does NOT add MongoDB transport when MONGO_URI is missing", async () => {
-    console.log(addMock.mock.calls);
     const { initMongoDBLogger } = await import("../logger.js");
 
     initMongoDBLogger();
 
     expect(warnMock).toHaveBeenCalled();
     expect(addMock).not.toHaveBeenCalled();
+  });
+
+  it("adds MongoDB transport if MONGO_URI is present", async () => {
+    process.env.MONGO_URI = "mongo uri";
+
+    const winston = await import("winston");
+
+    const { initMongoDBLogger } = await import("../logger.js");
+
+    initMongoDBLogger();
+
+    expect(addMock).toHaveBeenCalled();
+    expect(winston.default.transports.MongoDB).toHaveBeenCalledWith({
+      db: "mongo uri",
+      collection: "logs",
+      level: process.env.LOG_LEVEL ?? "info",
+      tryReconnect: true,
+    });
   });
 });
