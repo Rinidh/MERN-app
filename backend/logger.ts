@@ -31,9 +31,7 @@ export const logger: Logger = winston.createLogger({
       filename: path.join(logDir, "combined.log"),
     }),
 
-    new winston.transports.Console({
-      format: winston.format.simple(),
-    }),
+    new winston.transports.Console(),
   ],
 
   //PROCESS CATCHERS:
@@ -41,13 +39,13 @@ export const logger: Logger = winston.createLogger({
     new winston.transports.File({
       filename: path.join(logDir, "exceptions.log"),
     }),
-    new winston.transports.Console({ format: winston.format.simple() }),
+    new winston.transports.Console(),
   ],
   rejectionHandlers: [
     new winston.transports.File({
       filename: path.join(logDir, "rejections.log"),
     }),
-    new winston.transports.Console({ format: winston.format.simple() }),
+    new winston.transports.Console(),
   ],
 });
 
