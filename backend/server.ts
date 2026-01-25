@@ -3,6 +3,7 @@ import "./config/env.js";
 import express, { Response, Request, NextFunction } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import "express-async-errors";
 
 import { connectDB } from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
