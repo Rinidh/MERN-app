@@ -26,5 +26,8 @@ describe("logger", () => {
     const config = vi.mocked(winston.default.createLogger).mock.calls[0][0];
     expect(config).not.toBeUndefined();
     expect(config?.level).toBe("info");
+    expect((config?.transports as any[]).length).toBe(3);
+    expect(config?.exceptionHandlers?.length).toBe(2);
+    expect(config?.rejectionHandlers?.length).toBe(2);
   });
 });
