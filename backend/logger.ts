@@ -16,7 +16,7 @@ export const logger: Logger = winston.createLogger({
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     errors({ stack: true }),
-    customFormat
+    customFormat,
   ),
   transports: [
     new winston.transports.File({
@@ -44,21 +44,20 @@ export const logger: Logger = winston.createLogger({
   ],
 });
 
-const addMongoDBTransport = () => {
+export const initMongoDBLogger = () => {
   const mongoUri = process.env.MONGO_URI;
 
-  if (mongoUri) {
-    logger.add(
-      new winston.transports.MongoDB({
-        db: mongoUri,
-        collection: "log",
-        level: "warn",
-      })
-    );
-  } else {
-    logger.error("No 'MONGO_URI' found in environment variables");
-    process.exit(1);
-    // throw new Error("No 'MONGO_URI' found in environment variables");
+  if (!mongoUri) {
+    logger.warn("MongoDB logging not intiated, no MONGO_URI found");
+    return;
   }
+
+  logger.add(
+    new winston.transports.MongoDB({
+      db: mongoUri,
+      collection: "logs",
+      level: process.env.LOG_LEVEL ?? "info",
+      tryReconnect: true,
+    }),
+  );
 };
-addMongoDBTransport();

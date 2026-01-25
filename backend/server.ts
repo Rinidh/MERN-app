@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 
 import { connectDB } from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
-import { logger } from "./logger.js";
+import { logger, initMongoDBLogger } from "./logger.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -14,6 +14,7 @@ export const app = express();
 
 app.use(express.json()); // Middleware to parse JSON bodies in req.body
 app.use("/api/products", productRoutes);
+initMongoDBLogger();
 
 if (process.env.NODE_ENV === "production") {
   const __filename = fileURLToPath(import.meta.url); // __filename is path upto ".../backend/server.ts"
