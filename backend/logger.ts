@@ -1,6 +1,7 @@
 import winston from "winston";
 import "express-async-errors";
 import "winston-mongodb";
+import path from "path";
 
 import type { Logger } from "winston";
 
@@ -9,6 +10,8 @@ const { combine, timestamp, printf, errors } = winston.format;
 const customFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} - [${level}]: ${stack ?? message}`;
 });
+
+const logDir = path.resolve(process.cwd(), "logs");
 
 //CUSTOM LOGGER
 export const logger: Logger = winston.createLogger({
@@ -20,12 +23,12 @@ export const logger: Logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.File({
-      filename: "logs/errors.log",
+      filename: path.join(logDir, "errors.log"),
       level: "error",
     }),
 
     new winston.transports.File({
-      filename: "logs/combined.log",
+      filename: path.join(logDir, "combined.log"),
     }),
 
     new winston.transports.Console({
@@ -35,11 +38,15 @@ export const logger: Logger = winston.createLogger({
 
   //PROCESS CATCHERS:
   exceptionHandlers: [
-    new winston.transports.File({ filename: "logs/exceptions.log" }),
+    new winston.transports.File({
+      filename: path.join(logDir, "exceptions.log"),
+    }),
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
   rejectionHandlers: [
-    new winston.transports.File({ filename: "logs/rejections.log" }),
+    new winston.transports.File({
+      filename: path.join(logDir, "rejections.log"),
+    }),
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
 });
