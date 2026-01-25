@@ -72,4 +72,20 @@ describe("logger", () => {
       tryReconnect: true,
     });
   });
+
+  it("uses LOG_LEVEL env var for MongoDB transport when provided", async () => {
+    process.env.MONGO_URI = "mongodb://localhost:27017/test";
+    process.env.LOG_LEVEL = "error";
+
+    const winston = await import("winston");
+    const { initMongoDBLogger } = await import("../logger.js");
+
+    initMongoDBLogger();
+
+    expect(winston.default.transports.MongoDB).toHaveBeenCalledWith(
+      expect.objectContaining({
+        level: "error",
+      }),
+    );
+  });
 });
