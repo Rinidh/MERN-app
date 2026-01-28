@@ -57,4 +57,22 @@ describe("connectDB", () => {
     );
     expect(exitSpy).not.toHaveBeenCalled();
   });
+
+  it("logs error and exits when mongoose.connect throws Error", async () => {
+    process.env.MONGO_URI = "mongodb//:fake-mongoURI";
+
+    (mongoose.connect as unknown as vi.Mock).mockRejectedValue(
+      new Error("Failed to connect"),
+    );
+
+    await connectDB();
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Error connecting to MongoDB: Failed to connect"),
+      expect.objectContaining({
+        stack: expect.any(String),
+      }),
+    );
+    expect(exitSpy).toHaveBeenCalled();
+  });
 });
