@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach, Mock } from "vitest";
 
 vi.mock("mongoose", () => ({ default: { connect: vi.fn() } }));
 vi.mock("../logger.js", () => ({
@@ -42,7 +42,7 @@ describe("connectDB", () => {
 
   it("connects to MongoDB and logs success", async () => {
     process.env.MONGO_URI = "mongodb://fake-uri";
-    vi.mocked(mongoose.connect).mockResolvedValue({
+    vi.mocked(mongoose.connect as unknown as Mock).mockResolvedValue({
       connection: { host: "localhost" },
     });
 
@@ -61,7 +61,7 @@ describe("connectDB", () => {
   it("logs error and exits when mongoose.connect throws Error", async () => {
     process.env.MONGO_URI = "mongodb//:fake-mongoURI";
 
-    (mongoose.connect as unknown as vi.Mock).mockRejectedValue(
+    (mongoose.connect as unknown as Mock).mockRejectedValue(
       new Error("Failed to connect"),
     );
 
@@ -74,5 +74,19 @@ describe("connectDB", () => {
       }),
     );
     expect(exitSpy).toHaveBeenCalled();
+  });
+
+  it("handles non-Error thrown values", async () => {
+    process.env.MONGO_URI = "mongodb://fake-uri";
+
+    (mongoose.connect as unknown as Mock).mockRejectedValue("unknown errors");
+
+    await connectDB();
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "Unknown error occurred while connecting to MongoDB",
+    );
+
+    expect(exitSpy).toHaveBeenCalledWith(1);
   });
 });
