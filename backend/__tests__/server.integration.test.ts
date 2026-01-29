@@ -23,5 +23,30 @@ describe("Server integration - API routes", async () => {
     if (res.status === 500) {
       expect(res.body.message).toBeDefined();
     }
-  }, 15_000);
+  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
+});
+
+describe("Server integration - JSON middleware", () => {
+  it("returns 415 with message when req.body is not JSON", async () => {
+    const res = await request(app)
+      .post("/api/products")
+      .send("<p>Data as XML<p>")
+      .set("Content-Type", "application/xml");
+
+    expect(res.status).toBe(415);
+    expect(res.body.message).toEqual(
+      expect.stringContaining(
+        "Unsupported Media Type. Expected application/json.",
+      ),
+    );
+  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
+
+  it("accepts JSON bodies in requests", async () => {
+    const res = await request(app)
+      .post("/api/products")
+      .send({ name: "valid name", price: 10, image: "valid image url" })
+      .set("Content-Type", "application/json");
+
+    expect(res.status).not.toBe(415);
+  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
 });
