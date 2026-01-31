@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach, Mock } from "vitest";
 
-vi.mock("mongoose", () => ({ default: { connect: vi.fn() } }));
+vi.spyOn(mongoose, "connect");
 vi.mock("../logger.js", () => ({
   logger: { error: vi.fn(), info: vi.fn() },
 }));
