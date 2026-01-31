@@ -66,3 +66,7 @@ export const initMongoDBLogger = () => {
     }),
   );
 };
+
+if (process.env.NODE_ENV === "test") {
+  logger.silent = true;
+}
