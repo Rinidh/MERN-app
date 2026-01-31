@@ -44,7 +44,7 @@ describe("logger", () => {
     expect(config?.rejectionHandlers?.length).toBe(2);
 
     expect(customFormat).toBeDefined();
-  });
+  }, 1_000);
 
   it("does NOT add MongoDB transport when MONGO_URI is missing", async () => {
     const { initMongoDBLogger } = await import("../logger.js");
