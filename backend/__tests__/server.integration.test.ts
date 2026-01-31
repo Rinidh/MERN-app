@@ -9,7 +9,6 @@ vi.mock("./logger.js", () => ({
   initMongoDBLogger: vi.fn(),
 }));
 
-// process.env.NODE_ENV = "test"; // NODE_ENV='test' is set by vitest
 import { app } from "../server.js";
 
 describe("Server integration - API routes", async () => {
@@ -23,7 +22,7 @@ describe("Server integration - API routes", async () => {
     if (res.status === 500) {
       expect(res.body.message).toBeDefined();
     }
-  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
+  });
 });
 
 describe("Server integration - JSON middleware", () => {
@@ -39,7 +38,7 @@ describe("Server integration - JSON middleware", () => {
         "Unsupported Media Type. Expected application/json.",
       ),
     );
-  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
+  });
 
   it("accepts JSON bodies in requests", async () => {
     const res = await request(app)
@@ -48,5 +47,5 @@ describe("Server integration - JSON middleware", () => {
       .set("Content-Type", "application/json");
 
     expect(res.status).not.toBe(415);
-  }, 11_000); // 10_000ms buffering by mongoose methods as MongoDB is not connected
+  });
 });
