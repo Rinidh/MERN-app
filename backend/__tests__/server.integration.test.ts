@@ -1,4 +1,4 @@
-import { describe, vi, expect, it } from "vitest";
+import { describe, vi, expect, it, beforeAll } from "vitest";
 import request from "supertest";
 
 vi.mock("./config/db.js", () => ({
@@ -47,5 +47,13 @@ describe("Server integration - JSON middleware", () => {
       .set("Content-Type", "application/json");
 
     expect(res.status).not.toBe(415);
+  });
+});
+
+describe("Server integration - unknown routes (non-production)", () => {
+  it("returns 404 for unknown routes", async () => {
+    const response = await request(app).get("/non-existent-route");
+
+    expect(response.status).toBe(404);
   });
 });
