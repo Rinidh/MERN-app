@@ -82,4 +82,15 @@ describe("GET /api/products - Integration tests", () => {
     expect(productDoc).toHaveProperty("createdAt");
     expect(productDoc).toHaveProperty("updatedAt");
   });
+
+  it("returns 500 if database query fails", async () => {
+    await mongoose.connection.close();
+
+    const res = await request(app).get("/api/products");
+
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("message", "Internal Server Error");
+
+    await mongoose.connect(process.env.MONGO_URI as string); // reconnect to db for remaining lifecycle and cleanup
+  });
 });
