@@ -9,22 +9,22 @@ import Product from "../models/product.model.js";
 
 let mongoServer: MongoMemoryServer;
 
+beforeAll(async () => {
+  process.env.NODE_ENV = "test"; /// try when not set
+
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+  process.env.MONGO_URI = mongoUri;
+
+  await connectDB();
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+  await mongoServer.stop();
+});
+
 describe("GET /api/products - Integration tests", () => {
-  beforeAll(async () => {
-    process.env.NODE_ENV = "test"; /// try when not set
-
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    process.env.MONGO_URI = mongoUri;
-
-    await connectDB();
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-    await mongoServer.stop();
-  });
-
   afterEach(async () => {
     await Product.deleteMany({});
   });
@@ -92,5 +92,32 @@ describe("GET /api/products - Integration tests", () => {
     expect(res.body).toHaveProperty("message", "Internal Server Error");
 
     await mongoose.connect(process.env.MONGO_URI as string); // reconnect to db for remaining lifecycle and cleanup
+  });
+});
+
+describe("GET /api/products - Integration tests", () => {
+  it("creates a product and returns 201 with product data and message", async () => {
+    const payload = {
+      name: "New Product",
+      price: 150,
+      image: "image.jpg",
+    };
+
+    const res = await request(app).post("/api/products").send(payload);
+
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty("message", "Product created successfully");
+
+    const created = res.body.data;
+    expect(created._id).toEqual(expect.any(String));
+    expect(created.name).toBe("New Product");
+    expect(created.price).toBe(150);
+    expect(created.image).toBe("image.jpg");
+    expect(created.createdAt).toBeDefined();
+    expect(created.updatedAt).toBeDefined();
+
+    const productInDB = await Product.findById(created._id);
+    expect(productInDB).not.toBeNull();
+    expect(productInDB?.name).toBe(payload.name);
   });
 });
