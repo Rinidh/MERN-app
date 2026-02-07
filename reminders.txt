@@ -5,7 +5,7 @@
 Baseline Project seen from youtube: https://www.youtube.com/watch?v=MDZC8VDZnV8&list=PLXXFoBZbKBizkGAqcAghuBefugOFn-gTa&index=14
 
 FEATURES TO ADD:
-- backend tests
+- backend tests - rem int tests: https://chatgpt.com/share/6986cf81-6b00-800e-adfb-954f3d048bba
 - frontend tests
 - ask ai gen REAME.md
 - expand with more features: services, users, 
