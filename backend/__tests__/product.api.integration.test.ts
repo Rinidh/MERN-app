@@ -1,5 +1,13 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { afterAll, beforeAll, describe, expect, it, afterEach } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  afterEach,
+  vi,
+} from "vitest";
 import request from "supertest";
 import mongoose, { ObjectId } from "mongoose";
 
@@ -24,11 +32,11 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-describe("GET /api/products - Integration tests", () => {
-  afterEach(async () => {
-    await Product.deleteMany({});
-  });
+afterEach(async () => {
+  await Product.deleteMany({});
+});
 
+describe("GET /api/products - Integration tests", () => {
   it("returns 200 with empty array when no products exist", async () => {
     const res = await request(app).get("/api/products");
 
@@ -119,5 +127,35 @@ describe("GET /api/products - Integration tests", () => {
     const productInDB = await Product.findById(created._id);
     expect(productInDB).not.toBeNull();
     expect(productInDB?.name).toBe(payload.name);
+  });
+
+  it("returns 400 with message when required fields are missing", async () => {
+    const payload = { name: "product A" };
+
+    const res = await request(app).post("/api/products").send(payload);
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBeDefined();
+  });
+
+  it("returns 500 with message when saving product fails", async () => {
+    const saveSpy = vi
+      .spyOn(Product.prototype, "save")
+      .mockImplementationOnce(() => {
+        throw new Error("DB error!");
+      });
+
+    const payload = {
+      name: "Failure product",
+      price: 100,
+      image: "img.jpg",
+    };
+
+    const res = await request(app).post("/api/products").send(payload);
+
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("message");
+
+    saveSpy.mockRestore();
   });
 });
