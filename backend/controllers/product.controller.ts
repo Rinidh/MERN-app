@@ -117,10 +117,17 @@ export const deleteProduct = async (
   }
 
   try {
-    await Product.findByIdAndDelete(productId).orFail();
+    await Product.findByIdAndDelete(productId).orFail(
+      new Error("No product found"),
+    );
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error: unknown) {
     logger.error("Error deleting product:", error);
+
+    if (error instanceof Error && /found/.test(error.message)) {
+      res.status(404).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

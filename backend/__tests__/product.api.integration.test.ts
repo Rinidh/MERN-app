@@ -243,4 +243,13 @@ describe("DELETE /api/products/:id - Integration Tests", () => {
     expect(res.status).toBe(200);
     expect(res.body.message).toMatch(/deleted/i);
   });
+
+  it("returns 404 with message when no product found", async () => {
+    const id = new mongoose.Types.ObjectId();
+
+    const res = await request(app).delete(`/api/products/${id}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body.message).toMatch(/found/i);
+  });
 });
