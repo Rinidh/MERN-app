@@ -159,3 +159,39 @@ describe("GET /api/products - Integration tests", () => {
     saveSpy.mockRestore();
   });
 });
+
+describe("PUT /api/products/:id - Integration tests", () => {
+  it("should update an existing product and return 200 with updated data", async () => {
+    const product = await Product.create({
+      name: "Old Product",
+      price: 100,
+      image: "old.jpg",
+    });
+
+    const updatePayload = {
+      name: "Updated Product",
+      price: 250,
+      image: "updated.jpg",
+    };
+
+    const res = await request(app)
+      .put(`/api/products/${product._id}`)
+      .send(updatePayload);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBeDefined();
+
+    const updated = res.body.data;
+    expect(updated._id).toBe((product._id as ObjectId).toString());
+    expect(updated.name).toBe(updatePayload.name);
+    expect(updated.price).toBe(updatePayload.price);
+    expect(updated.image).toBe(updatePayload.image);
+    expect(updated.updatedAt).not.toBe(product.updatedAt.toISOString());
+    expect(updated.createdAt).toBe(product.createdAt.toISOString());
+
+    const productInDb = await Product.findById(
+      (product._id as ObjectId).toString(),
+    );
+    expect(productInDb?.name).toBe(updatePayload.name);
+  });
+});
