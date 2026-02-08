@@ -252,4 +252,21 @@ describe("DELETE /api/products/:id - Integration Tests", () => {
     expect(res.status).toBe(404);
     expect(res.body.message).toMatch(/found/i);
   });
+
+  it("returns 500 with message when database operation fails", async () => {
+    const product = await Product.create({
+      name: "existing product",
+      price: 50,
+      image: "img.jpeg",
+    });
+
+    vi.spyOn(Product, "findByIdAndDelete").mockImplementationOnce(() => {
+      throw new Error("connection error");
+    });
+
+    const res = await request(app).delete(`/api/products/${product._id}`);
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toMatch(/Internal Server Error/i);
+  });
 });
