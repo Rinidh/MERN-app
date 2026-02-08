@@ -205,4 +205,27 @@ describe("PUT /api/products/:id - Integration tests", () => {
     expect(res.status).toBe(404);
     expect(res.body.message).toMatch(/found/);
   });
+
+  it("returns 500 when database update operation fails", async () => {
+    const product = await Product.create({
+      name: "Product existing in DB",
+      price: 100,
+      image: "img.jpg",
+    });
+
+    const updateSpy = vi
+      .spyOn(Product, "findByIdAndUpdate")
+      .mockImplementationOnce(() => {
+        throw new Error("connection error / DB failure");
+      });
+
+    const res = await request(app)
+      .put(`/api/products/${product._id}`)
+      .send({ name: "updated name" });
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toMatch(/Internal Server Error/i);
+
+    updateSpy.mockRestore();
+  });
 });
