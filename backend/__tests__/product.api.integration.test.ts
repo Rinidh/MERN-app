@@ -103,7 +103,7 @@ describe("GET /api/products - Integration tests", () => {
   });
 });
 
-describe("GET /api/products - Integration tests", () => {
+describe("POST /api/products - Integration tests", () => {
   it("creates a product and returns 201 with product data and message", async () => {
     const payload = {
       name: "New Product",
@@ -161,7 +161,7 @@ describe("GET /api/products - Integration tests", () => {
 });
 
 describe("PUT /api/products/:id - Integration tests", () => {
-  it("should update an existing product and return 200 with updated data", async () => {
+  it("updates an existing product and returns 200 with updated data", async () => {
     const product = await Product.create({
       name: "Old Product",
       price: 100,
