@@ -194,4 +194,15 @@ describe("PUT /api/products/:id - Integration tests", () => {
     );
     expect(productInDb?.name).toBe(updatePayload.name);
   });
+
+  it("returns 404 with message when no product is found", async () => {
+    const nonExistentId = new mongoose.Types.ObjectId();
+
+    const res = await request(app)
+      .put(`/api/products/${nonExistentId.toString()}`)
+      .send({ name: "non-existent name" });
+
+    expect(res.status).toBe(404);
+    expect(res.body.message).toMatch(/found/);
+  });
 });

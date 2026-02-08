@@ -86,12 +86,17 @@ export const updateProduct = async (
     const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
       new: true,
       runValidators: true,
-    }).orFail();
+    }).orFail(new Error("No product found"));
     res
       .status(200)
       .json({ data: updatedProduct, message: "Product updated successfully" });
   } catch (error: unknown) {
     logger.error("Error updating product:", error);
+
+    if (error instanceof Error && /found/.test(error.message)) {
+      res.status(404).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
