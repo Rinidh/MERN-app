@@ -168,7 +168,7 @@ describe("updateProduct", () => {
     isValidObjectIdSpy.mockReturnValue(true);
   });
 
-  it("returns 404 for invalid id", async () => {
+  it("returns 400 for invalid id", async () => {
     isValidObjectIdSpy.mockReturnValue(false);
 
     const req = {
@@ -180,7 +180,7 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expect(logger.warn).toHaveBeenCalled();
-    expectResponse(res, 404);
+    expectResponse(res, 400);
     expect(updateOrFailMock).not.toHaveBeenCalled();
   });
 
@@ -243,7 +243,7 @@ describe("deleteProduct", () => {
     isValidObjectIdSpy.mockReturnValue(true);
   });
 
-  it("fails with 404 and a message if invalid ID supplied", async () => {
+  it("fails with 400 and a message if invalid ID supplied", async () => {
     const req = {
       params: { id: "invalid-id" },
     } as Request<{ id: string }>;
@@ -254,7 +254,7 @@ describe("deleteProduct", () => {
     await deleteProduct(req, res);
 
     expect(logger.warn).toHaveBeenCalled();
-    expectResponse(res, 404);
+    expectResponse(res, 400);
     expect(deleteOrFailMock).not.toHaveBeenCalled();
   });
 
