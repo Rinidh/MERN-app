@@ -229,3 +229,18 @@ describe("PUT /api/products/:id - Integration tests", () => {
     updateSpy.mockRestore();
   });
 });
+
+describe("DELETE /api/products/:id - Integration Tests", () => {
+  it("deletes an existing product and returns 200 with message", async () => {
+    const product = await Product.create({
+      name: "existing product",
+      price: 50,
+      image: "img.jpeg",
+    });
+
+    const res = await request(app).delete(`/api/products/${product._id}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/deleted/i);
+  });
+});
