@@ -18,8 +18,6 @@ import Product from "../models/product.model.js";
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  process.env.NODE_ENV = "test"; /// try when not set
-
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   process.env.MONGO_URI = mongoUri;

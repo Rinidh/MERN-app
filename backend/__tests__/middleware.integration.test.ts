@@ -1,13 +1,10 @@
 import { vi, describe, it, expect } from "vitest";
 import request from "supertest";
+import { ProductMock } from "../models/product.model.mock.js";
 
-vi.mock("./config/db.js", () => ({
-  connectDB: vi.fn().mockResolvedValue(null),
-}));
-vi.mock("./logger.js", () => ({
-  logger: { error: vi.fn(), info: vi.fn() },
-  initMongoDBLogger: vi.fn(),
-}));
+vi.mock("../models/product.model.js", () => ({ default: ProductMock }));
+vi.mock("./config/db.js");
+vi.mock("../logger.js");
 
 import { app } from "../server.js";
 
@@ -18,9 +15,18 @@ describe("requireJson", () => {
       price: 10,
       image: "img.jpg",
     });
-    console.log(res.body);
 
     expect(res.status).not.toBe(415);
     expect(res.body.message).not.toMatch(/application\/json/i);
+  });
+
+  it("blocks requests without application/json header and responds with 415 and message", async () => {
+    const res = await request(app)
+      .post("/api/products")
+      .set("Content-Type", "application/xml")
+      .send();
+
+    expect(res.status).toBe(415);
+    expect(res.body.message).toMatch(/application\/json/i);
   });
 });
