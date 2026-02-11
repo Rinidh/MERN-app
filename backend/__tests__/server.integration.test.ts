@@ -1,10 +1,10 @@
 import { describe, vi, expect, it, beforeAll } from "vitest";
 import request from "supertest";
 
-vi.mock("./config/db.js", () => ({
+vi.mock("../config/db.js", () => ({
   connectDB: vi.fn().mockResolvedValue(null),
 }));
-vi.mock("./logger.js", () => ({
+vi.mock("../logger.js", () => ({
   logger: { error: vi.fn(), info: vi.fn() },
   initMongoDBLogger: vi.fn(),
 }));

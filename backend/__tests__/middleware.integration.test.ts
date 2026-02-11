@@ -3,7 +3,7 @@ import request from "supertest";
 import { ProductMock } from "../models/product.model.mock.js";
 
 vi.mock("../models/product.model.js", () => ({ default: ProductMock }));
-vi.mock("./config/db.js");
+vi.mock("../config/db.js");
 vi.mock("../logger.js");
 
 import { app } from "../server.js";
