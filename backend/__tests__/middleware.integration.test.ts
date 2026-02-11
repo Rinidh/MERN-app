@@ -24,7 +24,7 @@ describe("requireJson", () => {
     const res = await request(app)
       .post("/api/products")
       .set("Content-Type", "application/xml")
-      .send();
+      .send("<p>Data as XML<p>");
 
     expect(res.status).toBe(415);
     expect(res.body.message).toMatch(/application\/json/i);
