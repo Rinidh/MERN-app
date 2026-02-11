@@ -18,7 +18,6 @@ describe("requireJson", () => {
       price: 10,
       image: "img.jpg",
     });
-    console.log(res.body);
 
     expect(res.status).not.toBe(415);
     expect(res.body.message).not.toMatch(/application\/json/i);

@@ -4,8 +4,7 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
-    setupFiles: ["./backend/__tests__/setup.ts"],
-    include: ["backend/**/*.test.ts"],
-    exclude: ["./AI-context"],
+    setupFiles: ["__tests__/setup.ts"],
+    include: ["__tests__/**/*.test.ts"],
   },
 });
