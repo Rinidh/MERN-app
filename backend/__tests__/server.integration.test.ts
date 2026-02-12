@@ -33,6 +33,14 @@ describe("Server bootstrap", () => {
 
     expect(connectDB).not.toHaveBeenCalled();
   });
+
+  it("app does not start listening when NODE_ENV=test", async () => {
+    const listenSpy = vi.spyOn((await import("express")).application, "listen");
+
+    await import("../server.js");
+
+    expect(listenSpy).not.toHaveBeenCalled();
+  });
 });
 
 describe("Server integration - unknown routes (non-production)", () => {
