@@ -1,4 +1,4 @@
-import { describe, vi, expect, it, afterEach } from "vitest";
+import { describe, vi, expect, it, afterEach, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
 
@@ -10,25 +10,20 @@ vi.mock("../logger.js", () => ({
   initMongoDBLogger: vi.fn(),
 }));
 
-import { app } from "../server.js";
-import { beforeEach } from "node:test";
 import { connectDB } from "../config/db.js";
 
+beforeEach(() => {
+  // beforeEach describe() test suite
+  process.env.NODE_ENV = "test"; // for readability (node env is also set by Vitest)
+});
+
 describe("Server bootstrap", () => {
-  let originalEnv = process.env.NODE_ENV;
-
-  beforeEach(() => {
-    process.env.NODE_ENV = originalEnv;
-  });
-
   afterEach(() => {
     vi.resetModules();
     vi.restoreAllMocks();
-  });
-
-  it("app does not start listening when NODE_ENV=test", async () => {
     process.env.NODE_ENV = "test";
-
+  });
+  it("app does not start listening when NODE_ENV=test", async () => {
     await import("../server.js");
 
     expect(connectDB).not.toHaveBeenCalled();
@@ -56,6 +51,8 @@ describe("Server bootstrap", () => {
 
 describe("Server integration - unknown routes (non-production)", () => {
   it("returns 404 for unknown routes", async () => {
+    const { app } = await import("../server.js");
+
     const response = await request(app).get("/non-existent-route");
 
     expect(response.status).toBe(404);
