@@ -30,11 +30,11 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const startServer = async (): Promise<void> => {
+export const startServer = async () => {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
+    return app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
     });
   } catch (error) {
@@ -45,5 +45,5 @@ const startServer = async (): Promise<void> => {
 
 if (process.env.NODE_ENV !== "test") {
   // server should not start listening if is to be used by supertest agent
-  startServer();
+  await startServer();
 }
