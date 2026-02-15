@@ -15,7 +15,6 @@ export const app = express();
 
 app.use(express.json()); // Middleware to parse JSON bodies in req.body
 app.use("/api/products", productRoutes);
-initMongoDBLogger();
 
 if (process.env.NODE_ENV === "production") {
   const __filename = fileURLToPath(import.meta.url); // __filename is path upto ".../backend/server.ts"
@@ -33,6 +32,7 @@ if (process.env.NODE_ENV === "production") {
 export const startServer = async () => {
   try {
     await connectDB();
+    initMongoDBLogger();
 
     return app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);

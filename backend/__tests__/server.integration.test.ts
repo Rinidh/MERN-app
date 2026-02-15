@@ -1,4 +1,4 @@
-import { describe, vi, expect, it, afterEach, beforeEach } from "vitest";
+import { describe, vi, expect, it, afterEach } from "vitest";
 import request from "supertest";
 
 vi.mock("../config/db.js", () => ({
@@ -10,7 +10,7 @@ vi.mock("../logger.js", () => ({
 }));
 
 import { connectDB } from "../config/db.js";
-import { logger } from "../logger.js";
+import { initMongoDBLogger, logger } from "../logger.js";
 
 describe("Server bootstrap", () => {
   afterEach(() => {
@@ -35,6 +35,7 @@ describe("Server bootstrap", () => {
 
     expect(listenSpy).toHaveBeenCalledOnce();
     expect(connectDB).toHaveBeenCalledOnce();
+    expect(initMongoDBLogger).toHaveBeenCalledOnce();
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining("Server is running on port"),
     );
