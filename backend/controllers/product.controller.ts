@@ -6,6 +6,7 @@ import Product, {
   ProductDocument,
 } from "../models/product.model.js";
 import { logger } from "../logger.js";
+import { DatabaseError } from "../customErrors.js";
 
 /**
  * GET /api/products
@@ -14,13 +15,14 @@ export const getAllProducts = async (
   _req: Request,
   res: Response,
 ): Promise<void> => {
-  try {
-    const products: ProductDocument[] = await Product.find({});
-    res.status(200).json({ data: products });
-  } catch (error: unknown) {
-    logger.error("Error fetching products:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+  const products: ProductDocument[] = await Product.find({});
+
+  if (!products) {
+    // when .find() returns null instead of empty []
+    throw new DatabaseError();
   }
+
+  res.status(200).json({ data: products });
 };
 
 /**
