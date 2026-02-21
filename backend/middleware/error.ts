@@ -5,6 +5,7 @@ import {
   MongoServerSelectionError,
 } from "mongodb";
 import { logger } from "../logger.js";
+import { BadRequestError } from "../errors/bad-request-error.js";
 
 export const errorHandler = (
   err: unknown,
@@ -12,12 +13,13 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  logger.error(err);
+
   if (
     err instanceof MongoNetworkError ||
     err instanceof MongoServerSelectionError ||
     err instanceof MongoNetworkTimeoutError
   ) {
-    logger.error("MongoDB network error");
     res.status(503).json({
       errors: [
         {
@@ -29,7 +31,6 @@ export const errorHandler = (
   }
 
   if ((err as any).code === "ECONNRESET") {
-    logger.error("Network error");
     res.status(503).json({
       errors: [
         {
@@ -41,11 +42,10 @@ export const errorHandler = (
   }
 
   if (err instanceof Error) {
-    logger.error("Unhandled error: ");
+    logger.error("An unhandled error was thrown");
   } else {
-    logger.error("Unknown non-error thrown! : ");
+    logger.error("An nnknown non-error was thrown");
   }
-  logger.error(err);
 
   return res.status(500).json({
     errors: [{ message: "Internal Server Error" }],
