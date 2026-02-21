@@ -8,6 +8,8 @@ import Product, {
 import { logger } from "../logger.js";
 import { BadRequestError } from "../errors/bad-request-error.js";
 import { ValidationError } from "../errors/validation-error.js";
+import { DocumentCastError } from "../errors/document-cast-error.js";
+import { NotFoundError } from "../errors/not-found-error.js";
 
 /**
  * GET /api/products
@@ -58,36 +60,19 @@ export const updateProduct = async (
   const productId = req.params.id;
   const fields = req.body;
 
-  if (!mongoose.isValidObjectId(productId)) {
-    logger.warn("Invalid mongo ID detected: ", productId);
-    res.status(400).json({ message: "Invalid product ID" });
-    return;
-  }
+  if (!mongoose.isValidObjectId(productId))
+    throw new DocumentCastError("Invalid product ID", productId);
 
-  if (Object.keys(fields).length === 0) {
-    res.status(400).json({
-      message: "At least one field is required to update",
-    });
-    return;
-  }
+  if (Object.keys(fields).length === 0)
+    throw new BadRequestError("At least one field is required to update");
 
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
-      new: true,
-      runValidators: true,
-    }).orFail(new Error("No product found"));
-    res
-      .status(200)
-      .json({ data: updatedProduct, message: "Product updated successfully" });
-  } catch (error: unknown) {
-    logger.error("Error updating product:", error);
-
-    if (error instanceof Error && /found/.test(error.message)) {
-      res.status(404).json({ message: error.message });
-    }
-
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+  const updatedProduct = await Product.findByIdAndUpdate(productId, fields, {
+    new: true,
+    runValidators: true,
+  }).orFail(new NotFoundError("No product found"));
+  res
+    .status(200)
+    .json({ data: updatedProduct, message: "Product updated successfully" });
 };
 
 /**

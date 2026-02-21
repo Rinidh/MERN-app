@@ -4,10 +4,12 @@ import {
   MongoNetworkTimeoutError,
   MongoServerSelectionError,
 } from "mongodb";
+import mongoose from "mongoose";
 import { logger } from "../logger.js";
 import { BadRequestError } from "../errors/bad-request-error.js";
 import { ValidationError } from "../errors/validation-error.js";
-import mongoose from "mongoose";
+import { DocumentCastError } from "../errors/document-cast-error.js";
+import { NotFoundError } from "../errors/not-found-error.js";
 
 export const errorHandler = (
   err: unknown,
@@ -18,7 +20,19 @@ export const errorHandler = (
   logger.error((err as any).constructor?.name); // custom error name logged for exact description
   logger.error(err);
 
-  if (err instanceof BadRequestError || err instanceof ValidationError) {
+  if (
+    err instanceof BadRequestError ||
+    err instanceof ValidationError ||
+    err instanceof NotFoundError
+  ) {
+    res.status(err.statusCode).json({
+      errors: err.serializeErrors(),
+    });
+    return;
+  }
+
+  if (err instanceof DocumentCastError) {
+    logger.warn(`Invalid mongo ID detected: ${err.invalidMongoId}`);
     res.status(err.statusCode).json({
       errors: err.serializeErrors(),
     });
@@ -28,6 +42,13 @@ export const errorHandler = (
   if (err instanceof mongoose.Error.ValidationError) {
     res.status(422).json({
       errors: Object.values(err.errors).map((e) => ({ message: e.message })),
+    });
+    return;
+  }
+
+  if (err instanceof mongoose.Error.CastError) {
+    res.status(422).json({
+      errors: [{ message: err.message }],
     });
     return;
   }
