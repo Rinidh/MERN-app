@@ -28,7 +28,6 @@ export const errorHandler = (
     return;
   }
 
-  // other network errors thrown at Node.js system-level, uncaught by MongoDB driver
   if ((err as any).code === "ECONNRESET") {
     logger.error("Network error");
     res.status(503).json({
@@ -42,10 +41,11 @@ export const errorHandler = (
   }
 
   if (err instanceof Error) {
-    logger.error("Unhandled error: ", err);
+    logger.error("Unhandled error: ");
   } else {
-    logger.error("Unknown non-error thrown! : ", err);
+    logger.error("Unknown non-error thrown! : ");
   }
+  logger.error(err);
 
   return res.status(500).json({
     errors: [{ message: "Internal Server Error" }],

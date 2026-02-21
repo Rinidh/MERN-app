@@ -17,12 +17,11 @@ export const connectDB = async (): Promise<void> => {
     logger.info(`Connected to MongoDB : ${conn.connection.host}`);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error(`Error connecting to MongoDB: ${error.message}`, {
-        stack: error.stack,
-      });
+      logger.error(`Error connecting to MongoDB: ${error.message}`);
     } else {
       logger.error("Unknown error occurred while connecting to MongoDB");
     }
+    logger.error(error);
 
     process.exit(1);
   }
