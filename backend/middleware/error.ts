@@ -17,9 +17,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  logger.error((err as any).constructor?.name); // custom error name logged for exact description
-  logger.error(err);
-
   switch (true) {
     case err instanceof BadRequestError ||
       err instanceof ValidationError ||
@@ -55,6 +52,9 @@ export const errorHandler = (
     case err instanceof MongoNetworkError ||
       err instanceof MongoServerSelectionError ||
       err instanceof MongoNetworkTimeoutError: {
+      logger.error((err as any).constructor?.name);
+      logger.error(err);
+
       res.status(503).json({
         errors: [
           {
@@ -66,6 +66,9 @@ export const errorHandler = (
     }
 
     case (err as any).code === "ECONNRESET": {
+      logger.error((err as any).constructor?.name);
+      logger.error(err);
+
       res.status(503).json({
         errors: [
           {
