@@ -8,7 +8,17 @@ FEATURES TO ADD:
 - backend tests - rem int tests: https://chatgpt.com/share/6986cf81-6b00-800e-adfb-954f3d048bba
 - frontend tests
 - ask ai gen REAME.md
+- improve/fix logging format:
+    - fix: logger('msg', err) with 2 args shows only err obj name, stack... but skips logging the 'msg' before. Can't pass 2 args. See Vidly / Vala-client for soln
+    - show 'DatabaseError:...' instead of 'Error:...' by using error.name
+    - colorize,  
+- polish error messages sent in `err instanceof mongoose.Error.ValidationError` and `err instanceof mongoose.Error.CastError` in error.ts
+- error.ts: let express default error handler send error when app is in `process.env.APP_DEBUG === true` mode, such that all errors (even validation, cast, not found etc errors) are logge or responded back for viewing
 - expand with more features: services, users, 
+
+RESPONSE JSON FORMATS:
+  - success: {data, message}
+  - error: { errors: [{message, field?}, {message, field?}] }
 
 ---------
 Project Folder Structure Tree:
@@ -88,4 +98,16 @@ C:\Users\lenovo\documents\projects\mern-app
 
 -----------
 
+
+
+
+
+
+   if (error instanceof DatabaseError) { // also make commit of customErrors status change to 500
+    logger.error(error);
+    res.status(error.statusCode).json({
+      errors: error.serializeErrors(),
+    });
+    return;
+  }
 

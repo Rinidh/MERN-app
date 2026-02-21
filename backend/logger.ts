@@ -3,6 +3,7 @@ import "winston-mongodb";
 import path from "path";
 
 import type { Logger } from "winston";
+import { ConfigurationError } from "./errors/configuration-error.js";
 
 const { combine, timestamp, printf, errors } = winston.format;
 
@@ -52,10 +53,10 @@ export const logger: Logger = winston.createLogger({
 export const initMongoDBLogger = () => {
   const mongoUri = process.env.MONGO_URI;
 
-  if (!mongoUri) {
-    logger.warn("MongoDB logging not intiated, no MONGO_URI found");
-    return;
-  }
+  if (!mongoUri)
+    throw new ConfigurationError(
+      "MongoDB logging not intiated, no MONGO_URI found",
+    );
 
   logger.add(
     new winston.transports.MongoDB({

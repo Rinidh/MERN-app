@@ -5,7 +5,6 @@ import Product, {
   Product as ProductPayload,
   ProductDocument,
 } from "../models/product.model.js";
-import { logger } from "../logger.js";
 import { BadRequestError } from "../errors/bad-request-error.js";
 import { ValidationError } from "../errors/validation-error.js";
 import { DocumentCastError } from "../errors/document-cast-error.js";
