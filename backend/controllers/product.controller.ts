@@ -6,7 +6,6 @@ import Product, {
   ProductDocument,
 } from "../models/product.model.js";
 import { logger } from "../logger.js";
-import { DatabaseError } from "../customErrors.js";
 
 /**
  * GET /api/products
@@ -17,10 +16,7 @@ export const getAllProducts = async (
 ): Promise<void> => {
   const products: ProductDocument[] = await Product.find({});
 
-  if (!products) {
-    // when .find() returns null instead of empty []
-    throw new DatabaseError();
-  }
+  // no need to throw DatabaseError as empty products [] is valid to be sent to client, and  Product.find({}) will always throw network level errors
 
   res.status(200).json({ data: products });
 };
