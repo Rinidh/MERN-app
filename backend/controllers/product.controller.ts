@@ -6,6 +6,8 @@ import Product, {
   ProductDocument,
 } from "../models/product.model.js";
 import { logger } from "../logger.js";
+import { BadRequestError } from "../errors/bad-request-error.js";
+import { ValidationError } from "../errors/validation-error.js";
 
 /**
  * GET /api/products
@@ -15,8 +17,6 @@ export const getAllProducts = async (
   res: Response,
 ): Promise<void> => {
   const products: ProductDocument[] = await Product.find({});
-
-  // no need to throw DatabaseError as empty products [] is valid to be sent to client, and  Product.find({}) will always throw network level errors
 
   res.status(200).json({ data: products });
 };
@@ -30,31 +30,22 @@ export const createProduct = async (
 ): Promise<void> => {
   const { name, price, image } = req.body;
 
-  if (!name?.trim() || !image?.trim() || price == null) {
-    res.status(400).json({ message: "Please fill in all fields." });
-    return;
-  }
+  if (!name?.trim() || !image?.trim() || price == null)
+    throw new BadRequestError("Please fill in all fields.");
 
   const numPrice = Number(price);
-  if (Number.isNaN(numPrice) || numPrice <= 0) {
-    res.status(400).json({ message: "Price must be a valid number." });
-    return;
-  }
+  if (Number.isNaN(numPrice) || numPrice <= 0)
+    throw new ValidationError("Price must be a valid number.");
 
-  try {
-    const newProduct = new Product({
-      name: name.trim(),
-      price: numPrice,
-      image: image.trim(),
-    });
-    const savedProduct = await newProduct.save();
-    res
-      .status(201)
-      .json({ data: savedProduct, message: "Product created successfully" });
-  } catch (error: unknown) {
-    logger.error("Error creating product:", error);
-    res.status(500).json({ message: "Internal server Error" });
-  }
+  const newProduct = new Product({
+    name: name.trim(),
+    price: numPrice,
+    image: image.trim(),
+  });
+  const savedProduct = await newProduct.save();
+  res
+    .status(201)
+    .json({ data: savedProduct, message: "Product created successfully" });
 };
 
 /**
