@@ -10,6 +10,7 @@ import { BadRequestError } from "../errors/bad-request-error.js";
 import { ValidationError } from "../errors/validation-error.js";
 import { DocumentCastError } from "../errors/document-cast-error.js";
 import { NotFoundError } from "../errors/not-found-error.js";
+import { UnsupportedMediaTypeError } from "../errors/unsupported-media-type-error.js";
 
 export const errorHandler = (
   err: unknown,
@@ -24,7 +25,8 @@ export const errorHandler = (
   switch (true) {
     case err instanceof BadRequestError ||
       err instanceof ValidationError ||
-      err instanceof NotFoundError: {
+      err instanceof NotFoundError ||
+      err instanceof UnsupportedMediaTypeError: {
       res.status(err.statusCode).json({
         errors: err.serializeErrors(),
       });

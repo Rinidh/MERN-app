@@ -1,11 +1,7 @@
 import { RequestHandler } from "express";
+import { UnsupportedMediaTypeError } from "../errors/unsupported-media-type-error.js";
 
 export const requireJson: RequestHandler = (req, res, next) => {
-  if (!req.is("application/json")) {
-    res
-      .status(415)
-      .json({ message: "Unsupported Media Type. Expected application/json." });
-  }
-
+  if (!req.is("application/json")) throw new UnsupportedMediaTypeError();
   next();
 };
