@@ -70,6 +70,7 @@ export const updateProduct = async (
     new: true,
     runValidators: true,
   }).orFail(new NotFoundError("No product found"));
+
   res
     .status(200)
     .json({ data: updatedProduct, message: "Product updated successfully" });
@@ -84,24 +85,12 @@ export const deleteProduct = async (
 ): Promise<void> => {
   const productId = req.params.id;
 
-  if (!mongoose.isValidObjectId(productId)) {
-    logger.warn("Invalid mongo ID detected: ", productId);
-    res.status(400).json({ message: "Invalid product ID" });
-    return;
-  }
+  if (!mongoose.isValidObjectId(productId))
+    throw new DocumentCastError("Invalid product ID", productId);
 
-  try {
-    await Product.findByIdAndDelete(productId).orFail(
-      new Error("No product found"),
-    );
-    res.status(200).json({ message: "Product deleted successfully" });
-  } catch (error: unknown) {
-    logger.error("Error deleting product:", error);
+  await Product.findByIdAndDelete(productId).orFail(
+    new NotFoundError("No product found"),
+  );
 
-    if (error instanceof Error && /found/.test(error.message)) {
-      res.status(404).json({ message: error.message });
-    }
-
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+  res.status(200).json({ message: "Product deleted successfully" });
 };
