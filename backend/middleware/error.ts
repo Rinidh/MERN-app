@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   MongoNetworkError,
   MongoNetworkTimeoutError,
+  MongoServerError,
   MongoServerSelectionError,
 } from "mongodb";
 import mongoose from "mongoose";
@@ -55,6 +56,17 @@ export const errorHandler = (
       return;
     }
 
+    case (err as MongoServerError).name === "MongoServerError" &&
+      (err as MongoServerError).code === 11000: {
+      logger.warn(
+        `Duplicate unique key: ${JSON.stringify((err as MongoServerError).keyValue)}`,
+      );
+      res.status(409).json({
+        errors: [{ message: "Field value already taken" }],
+      });
+      return;
+    }
+
     case err instanceof MongoNetworkError ||
       err instanceof MongoServerSelectionError ||
       err instanceof MongoNetworkTimeoutError: {
@@ -87,12 +99,14 @@ export const errorHandler = (
 
     case err instanceof Error:
       logger.error("An unhandled error was thrown");
+      logger.error(err);
       return res.status(500).json({
         errors: [{ message: "Internal Server Error" }],
       });
 
     default:
       logger.error("An nnknown non-error was thrown");
+      logger.error(err);
       return res.status(500).json({
         errors: [{ message: "Internal Server Error" }],
       });

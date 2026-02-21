@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema<ProductDocument>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     price: {
       type: Number,
@@ -36,7 +37,7 @@ const productSchema = new mongoose.Schema<ProductDocument>(
   },
   {
     timestamps: true, // MongoDB automatically manage createdAt and updatedAt fields
-  }
+  },
 );
 
 const Product: Model<ProductDocument> =
