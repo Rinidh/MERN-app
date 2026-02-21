@@ -17,6 +17,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+
   switch (true) {
     case err instanceof BadRequestError ||
       err instanceof ValidationError ||
