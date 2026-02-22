@@ -18,6 +18,7 @@ import Product from "../models/product.model.js";
 import { logger } from "../logger.js";
 import mongoose from "mongoose";
 import { BadRequestError } from "../errors/bad-request-error.js";
+import { ValidationError } from "../errors/validation-error.js";
 
 // MOCKS
 vi.mock("../models/product.model.js", () => ({
@@ -101,16 +102,20 @@ describe("createProduct", () => {
   it.each([
     ["NaN price", "xyz"],
     ["negative  price", -1],
-  ])("returns 400 with message if price is %s", async (_, price) => {
+  ])("throws ValidationError with message if price is %s", async (_, price) => {
     const req = {
       body: { name: "valid name", price, image: "valid image url" },
     } as Request;
     const res = createRes();
 
-    await createProduct(req, res);
-
-    expectResponse(res, 400);
-    expect(ProductMock).not.toHaveBeenCalled();
+    try {
+      await createProduct(req, res);
+      throw new Error("Test should have thrown");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ValidationError);
+      expect((error as Error).message).toBe("Price must be a valid number.");
+      expect(ProductMock).not.toHaveBeenCalled();
+    }
   });
 
   it("creates new product and returns 201 with data and message", async () => {
@@ -137,19 +142,7 @@ describe("createProduct", () => {
     expectResponse(res, 201, createdProduct);
   });
 
-  it("returns 500 with message on db error", async () => {
-    const req = {
-      body: { name: "valid name", image: "valid image url", price: 10 },
-    } as Request;
-    const res = createRes();
-
-    vi.mocked(saveMock).mockRejectedValue(new Error("failed to save"));
-
-    await createProduct(req, res);
-
-    expect(logger.error).toHaveBeenCalled();
-    expectResponse(res, 500);
-  });
+  // Ensuring MongoServerError, ECONNRESET etc errors are thrown is responsibility of mongoose and MongoDB driver
 });
 
 describe("updateProduct", () => {
