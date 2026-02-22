@@ -17,6 +17,7 @@ import {
 import Product from "../models/product.model.js";
 import { logger } from "../logger.js";
 import mongoose from "mongoose";
+import { BadRequestError } from "../errors/bad-request-error.js";
 
 // MOCKS
 vi.mock("../models/product.model.js", () => ({
@@ -73,25 +74,29 @@ describe("getAllProducts", () => {
 
     expectResponse(res, 200, mockProducts);
   });
-
-  // Product.find() returns empty array if no products in DB which is a valid response data
-  // Product.find() can throw MongoServerError, ECONNRESET etc errors. Testing these is responsibility of mongoose
 });
 
 describe("createProduct", () => {
   it.each([
     ["name", { name: "", price: 10, image: "valid image url" }],
     ["price", { name: "valid name", price: null, image: "valid image url" }],
-    ["image", { name: "valid name", price: null, image: "" }],
-  ])("returns 400 with message when %s field is missing", async (_, body) => {
-    const req = { body } as Request;
-    const res = createRes();
+    ["image", { name: "valid name", price: 15, image: "" }],
+  ])(
+    "throws BadRequestError with message when %s field is missing",
+    async (_, body) => {
+      const req = { body } as Request;
+      const res = createRes();
 
-    await createProduct(req, res);
-
-    expectResponse(res, 400);
-    expect(ProductMock).not.toHaveBeenCalled();
-  });
+      try {
+        await createProduct(req, res);
+        throw new Error("Test should have thrown");
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestError);
+        expect((error as Error).message).toBe("Please fill in all fields.");
+        expect(ProductMock).not.toHaveBeenCalled();
+      }
+    },
+  );
 
   it.each([
     ["NaN price", "xyz"],
@@ -127,7 +132,7 @@ describe("createProduct", () => {
 
     await createProduct(req, res);
 
-    expect(ProductMock).toHaveBeenCalled();
+    expect(ProductMock).toHaveBeenCalledWith(expect.objectContaining(req.body));
     expect(saveMock).toHaveBeenCalled();
     expectResponse(res, 201, createdProduct);
   });
