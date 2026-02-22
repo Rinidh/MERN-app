@@ -19,7 +19,7 @@ export const getAllProducts = async (
 ): Promise<void> => {
   const products: ProductDocument[] = await Product.find({});
 
-  res.status(200).json({ data: products });
+  res.status(200).json({ data: products, message: "" });
 };
 
 /**
@@ -87,9 +87,11 @@ export const deleteProduct = async (
   if (!mongoose.isValidObjectId(productId))
     throw new DocumentCastError("Invalid product ID", productId);
 
-  await Product.findByIdAndDelete(productId).orFail(
+  const deletedProduct = await Product.findByIdAndDelete(productId).orFail(
     new NotFoundError("No product found"),
   );
 
-  res.status(200).json({ message: "Product deleted successfully" });
+  res
+    .status(200)
+    .json({ data: deletedProduct, message: "Product deleted successfully" });
 };
