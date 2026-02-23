@@ -183,6 +183,9 @@ describe("updateProduct", () => {
       throw new Error("Test should throw");
     } catch (error) {
       expect(error).toBeInstanceOf(BadRequestError);
+      expect((error as Error).message).toBe(
+        "At least one field is required to update",
+      );
       expect(updateOrFailMock).not.toHaveBeenCalled();
     }
   });
