@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { ConfigurationError } from "../errors/configuration-error.js";
 
 const addMock = vi.fn();
 const warnMock = vi.fn();
@@ -46,13 +47,19 @@ describe("logger", () => {
     expect(customFormat).toBeDefined();
   }, 1_000);
 
-  it("does NOT add MongoDB transport when MONGO_URI is missing", async () => {
+  it("throws ConfigurationError and does NOT add MongoDB transport when MONGO_URI is missing", async () => {
     const { initMongoDBLogger } = await import("../logger.js");
 
-    initMongoDBLogger();
-
-    expect(warnMock).toHaveBeenCalled();
-    expect(addMock).not.toHaveBeenCalled();
+    try {
+      initMongoDBLogger();
+      throw new Error("Test should have thrown");
+    } catch (error) {
+      expect((error as Object).constructor?.name).toBe("ConfigurationError"); // same as `.toBeInstanceOf()` matcher
+      expect((error as Error).message).toBe(
+        "MongoDB logging not intiated, no MONGO_URI found",
+      );
+      expect(addMock).not.toHaveBeenCalled();
+    }
   });
 
   it("adds MongoDB transport if MONGO_URI is present", async () => {
