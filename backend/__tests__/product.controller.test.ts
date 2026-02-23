@@ -166,7 +166,7 @@ describe("updateProduct", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(DocumentCastError);
       expect((error as Error).message).toBe("Invalid product ID");
-      expect((error as any).invalidMongoId).toBe(expect.any(String));
+      expect((error as any).invalidMongoId).toEqual(expect.any(String));
       expect(updateOrFailMock).not.toHaveBeenCalled();
     }
   });
