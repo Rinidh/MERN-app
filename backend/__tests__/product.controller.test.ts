@@ -19,6 +19,7 @@ import { logger } from "../logger.js";
 import mongoose from "mongoose";
 import { BadRequestError } from "../errors/bad-request-error.js";
 import { ValidationError } from "../errors/validation-error.js";
+import { DocumentCastError } from "../errors/document-cast-error.js";
 
 // MOCKS
 vi.mock("../models/product.model.js", () => ({
@@ -150,7 +151,7 @@ describe("updateProduct", () => {
     isValidObjectIdSpy.mockReturnValue(true);
   });
 
-  it("returns 400 for invalid id", async () => {
+  it("throws DocumentCastError with message and id if invalid id", async () => {
     isValidObjectIdSpy.mockReturnValue(false);
 
     const req = {
@@ -159,36 +160,43 @@ describe("updateProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    await updateProduct(req, res);
-
-    expect(logger.warn).toHaveBeenCalled();
-    expectResponse(res, 400);
-    expect(updateOrFailMock).not.toHaveBeenCalled();
+    try {
+      await updateProduct(req, res);
+      throw new Error("Test should throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(DocumentCastError);
+      expect((error as Error).message).toBe("Invalid product ID");
+      expect((error as any).invalidMongoId).toBe(expect.any(String));
+      expect(updateOrFailMock).not.toHaveBeenCalled();
+    }
   });
 
-  it("returns 400 with message if no fields supplied to update", async () => {
+  it("throws BadRequestError with message if no fields to update", async () => {
     const req = {
       params: { id: "valid-id" },
       body: {},
     } as Request<{ id: string }>;
     const res = createRes();
 
-    await updateProduct(req, res);
-
-    expectResponse(res, 400);
-    expect(updateOrFailMock).not.toHaveBeenCalled();
+    try {
+      await updateProduct(req, res);
+      throw new Error("Test should throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestError);
+      expect(updateOrFailMock).not.toHaveBeenCalled();
+    }
   });
 
   it("updates product and returns 200 with updated product and message", async () => {
     const req = {
       params: { id: "valid-id" },
-      body: { name: "valid name updated" },
+      body: { name: "name updated" },
     } as Request<{ id: string }>;
     const res = createRes();
 
     const updatedProduct = {
       _id: "valid-id",
-      name: "valid name updated",
+      name: "name updated",
       price: 10,
       image: "valid image url",
       createdAt: new Date(),
@@ -199,25 +207,10 @@ describe("updateProduct", () => {
     await updateProduct(req, res);
 
     expectResponse(res, 200, updatedProduct);
-    expect(updateOrFailMock).toHaveBeenCalled();
+    expect(updateOrFailMock).toHaveBeenCalledOnce();
   });
 
-  it("returns 500 when db error", async () => {
-    const req = {
-      params: { id: "valid-id" },
-      body: { name: "valid name updated" },
-    } as Request<{ id: string }>;
-    const res = createRes();
-
-    vi.mocked(updateOrFailMock).mockRejectedValue(
-      new Error("failed to update"),
-    );
-
-    await updateProduct(req, res);
-
-    expect(logger.error).toHaveBeenCalled();
-    expectResponse(res, 500);
-  });
+  // ensuring (hence testing) that an error is thrown by .orFail() when Product.findByIdAndUpdate() returns null is responsibility of mongoose
 });
 
 describe("deleteProduct", () => {
