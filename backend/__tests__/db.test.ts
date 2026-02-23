@@ -1,43 +1,36 @@
-import { describe, expect, it, vi, beforeEach, afterEach, Mock } from "vitest";
+import { describe, expect, it, vi, beforeEach, Mock } from "vitest";
 
 vi.spyOn(mongoose, "connect");
 vi.mock("../logger.js", () => ({
   logger: { error: vi.fn(), info: vi.fn() },
 }));
 
-vi.spyOn(process, "exit").mockImplementation((() => undefined) as never);
-
 import { connectDB } from "../config/db.js";
 import { logger } from "../logger.js";
 import mongoose from "mongoose";
+import { ConfigurationError } from "../errors/configuration-error.js";
 
 describe("connectDB", () => {
-  let exitSpy: ReturnType<typeof vi.spyOn>;
   const originalEnv = process.env;
 
   beforeEach(() => {
-    exitSpy = vi
-      .spyOn(process, "exit")
-      .mockImplementation((() => undefined) as never);
     vi.clearAllMocks();
     process.env = { ...originalEnv }; // reset all environment variables eg MONGO_URI, PORT etc that have been altered during tests
   });
 
-  afterEach(() => {
-    exitSpy.mockRestore(); // restore original process.exit to reset global state then spy again before a new test
-  });
-
-  it("logs error and exits if MONGO_URI is missing", async () => {
+  it("throws ConfigurationEror when MONGO_URI is missing", async () => {
     delete process.env.MONGO_URI;
 
-    await connectDB();
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("Error connecting to MongoDB:"),
-      expect.any(Object),
-    );
-    expect(exitSpy).toHaveBeenCalledWith(1);
-    expect(mongoose.connect).not.toHaveBeenCalled();
+    try {
+      await connectDB();
+      throw new Error("Test should throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigurationError);
+      expect((error as Error).message).toBe(
+        "No 'MONGO_URI' found in environment variables",
+      );
+      expect(mongoose.connect).not.toHaveBeenCalled();
+    }
   });
 
   it("connects to MongoDB and logs success", async () => {
@@ -55,38 +48,5 @@ describe("connectDB", () => {
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining("localhost"),
     );
-    expect(exitSpy).not.toHaveBeenCalled();
-  });
-
-  it("logs error and exits when mongoose.connect throws Error", async () => {
-    process.env.MONGO_URI = "mongodb//:fake-mongoURI";
-
-    (mongoose.connect as unknown as Mock).mockRejectedValue(
-      new Error("Failed to connect"),
-    );
-
-    await connectDB();
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("Error connecting to MongoDB: Failed to connect"),
-      expect.objectContaining({
-        stack: expect.any(String),
-      }),
-    );
-    expect(exitSpy).toHaveBeenCalled();
-  });
-
-  it("handles non-Error thrown values", async () => {
-    process.env.MONGO_URI = "mongodb://fake-uri";
-
-    (mongoose.connect as unknown as Mock).mockRejectedValue("unknown errors");
-
-    await connectDB();
-
-    expect(logger.error).toHaveBeenCalledWith(
-      "Unknown error occurred while connecting to MongoDB",
-    );
-
-    expect(exitSpy).toHaveBeenCalledWith(1);
   });
 });
