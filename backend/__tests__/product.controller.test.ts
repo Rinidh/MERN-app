@@ -221,7 +221,7 @@ describe("deleteProduct", () => {
     isValidObjectIdSpy.mockReturnValue(true);
   });
 
-  it("fails with 400 and a message if invalid ID supplied", async () => {
+  it("throws DocumentCastError with message and id if invalid ID sent", async () => {
     const req = {
       params: { id: "invalid-id" },
     } as Request<{ id: string }>;
@@ -229,11 +229,14 @@ describe("deleteProduct", () => {
 
     isValidObjectIdSpy.mockReturnValue(false);
 
-    await deleteProduct(req, res);
-
-    expect(logger.warn).toHaveBeenCalled();
-    expectResponse(res, 400);
-    expect(deleteOrFailMock).not.toHaveBeenCalled();
+    try {
+      await deleteProduct(req, res);
+      throw new Error("Test should throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(DocumentCastError);
+      expect(typeof (error as Error).message).toBe("string"); // same as .toEqual(expect.any(String))
+      expect(deleteOrFailMock).not.toHaveBeenCalled();
+    }
   });
 
   it("deletes product and responds with 200 and message", async () => {
@@ -242,26 +245,20 @@ describe("deleteProduct", () => {
     } as Request<{ id: string }>;
     const res = createRes();
 
-    vi.mocked(deleteOrFailMock).mockResolvedValue(null);
+    const deletedProduct = {
+      _id: "valid-id",
+      name: "deleted name",
+      price: 10,
+      image: "valid image url",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    vi.mocked(deleteOrFailMock).mockResolvedValue(deletedProduct);
 
     await deleteProduct(req, res);
 
-    expectResponse(res, 200);
+    expectResponse(res, 200, deletedProduct);
   });
 
-  it("returns 500 with message if db error", async () => {
-    const req = {
-      params: { id: "valid-id" },
-    } as Request<{ id: string }>;
-    const res = createRes();
-
-    vi.mocked(deleteOrFailMock).mockRejectedValue(
-      new Error("failed to delete"),
-    );
-
-    await deleteProduct(req, res);
-
-    expect(logger.error).toHaveBeenCalled();
-    expectResponse(res, 500);
-  });
+  // ensuring (hence testing) that an error is thrown by .orFail() when Product.findByIdAndDelete() returns null is responsibility of mongoose
 });
