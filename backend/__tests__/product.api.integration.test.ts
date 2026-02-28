@@ -273,6 +273,15 @@ describe("DELETE /api/products/:id - Integration Tests", () => {
     expect(res.body.message).toMatch(/deleted/i);
   });
 
+  it("returns 400 with message for invalid product id sent", async () => {
+    const invalidMongoId = 1234;
+
+    const res = await request(app).delete(`/api/products/${invalidMongoId}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors[0].message).toMatch(/[invalid id]/i);
+  });
+
   it("returns 404 with message when no product found", async () => {
     const id = new mongoose.Types.ObjectId();
 
