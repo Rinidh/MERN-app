@@ -50,7 +50,7 @@ export const errorHandler = (
     }
 
     case err instanceof mongoose.Error.CastError: {
-      res.status(422).json({
+      res.status(400).json({
         errors: [{ message: err.message }],
       });
       return;
