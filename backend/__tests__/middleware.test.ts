@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { Request, Response, NextFunction } from "express";
 
 import { requireJson } from "../middleware/requireJson.js";
@@ -33,12 +33,11 @@ describe("requireJson", () => {
 });
 
 describe("handleInvalidJson middleware", () => {
-  it("converts JSON SyntaxError with status 400 into BadRequestError", () => {
-    // json syntax error is thrown by express.json() middleware in real implementation
-    let mockReq: Partial<Request>;
-    let mockRes: Partial<Response>;
-    let mockNext: NextFunction;
+  let mockReq: Partial<Request>;
+  let mockRes: Partial<Response>;
+  let mockNext: NextFunction;
 
+  beforeEach(() => {
     mockReq = {
       headers: {
         "content-type": "application/json",
@@ -47,7 +46,11 @@ describe("handleInvalidJson middleware", () => {
     };
     mockRes = {};
     mockNext = vi.fn();
+  });
 
+  afterEach(() => vi.clearAllMocks());
+
+  it("converts JSON SyntaxError with status 400 into BadRequestError", () => {
     const syntaxError = new SyntaxError("Unexpected token");
     (syntaxError as any).status = 400;
 
@@ -63,5 +66,65 @@ describe("handleInvalidJson middleware", () => {
     const passedError = vi.mocked(mockNext).mock.calls[0][0];
     expect(passedError).toBeInstanceOf(BadRequestError);
     expect((passedError as any).message).toBe("Invalid JSON body");
+  });
+
+  it("passes through the error if not SyntaxError", () => {
+    const error = new Error("Some other error");
+
+    handleInvalidJson(error, mockReq as Request, mockRes as Response, mockNext);
+
+    expect(mockNext).toHaveBeenCalledOnce();
+    expect(mockNext).toHaveBeenCalledWith(error);
+  });
+
+  it("passes through SyntaxError if status is not 400", () => {
+    const syntaxError = new SyntaxError("Unexpected token");
+    (syntaxError as any).status = 500; // as it would be in case of a syntax error left out by programmer
+
+    handleInvalidJson(
+      syntaxError,
+      mockReq as Request,
+      mockRes as Response,
+      mockNext,
+    );
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledWith(syntaxError);
+  });
+
+  it("passes through errors if request has no body property at all", () => {
+    delete mockReq.body; // mockReq.body = {} is still valid json OR even mockReq.body = undefined / null still declares the property in the object
+
+    const syntaxError = new SyntaxError("Unexpected token");
+    (syntaxError as any).status = 400;
+
+    handleInvalidJson(
+      syntaxError,
+      mockReq as Request,
+      mockRes as Response,
+      mockNext,
+    );
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledWith(syntaxError);
+  });
+
+  it("passes through errors if request content-type is not application/json", () => {
+    mockReq.headers = {
+      "content-type": "text/plain",
+    };
+
+    const syntaxError = new SyntaxError("Unexpected token");
+    (syntaxError as any).status = 400;
+
+    handleInvalidJson(
+      syntaxError,
+      mockReq as Request,
+      mockRes as Response,
+      mockNext,
+    );
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledWith(syntaxError);
   });
 });
