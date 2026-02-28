@@ -44,7 +44,7 @@ describe("handleInvalidJson middleware", () => {
       },
       body: {},
     };
-    mockRes = {};
+    mockRes = { status: vi.fn() };
     mockNext = vi.fn();
   });
 
@@ -126,5 +126,19 @@ describe("handleInvalidJson middleware", () => {
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledWith(syntaxError);
+  });
+
+  it("doesn't interact with response objects", () => {
+    const syntaxError = new SyntaxError("Unexpected token");
+    (syntaxError as any).status = 400;
+
+    handleInvalidJson(
+      syntaxError,
+      mockReq as Request,
+      mockRes as Response,
+      mockNext,
+    );
+
+    expect(mockRes.status).not.toHaveBeenCalled();
   });
 });
