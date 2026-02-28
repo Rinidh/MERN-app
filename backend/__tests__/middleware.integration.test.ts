@@ -27,6 +27,6 @@ describe("requireJson", () => {
       .send("<p>Data as XML<p>");
 
     expect(res.status).toBe(415);
-    expect(res.body.message).toMatch(/application\/json/i);
+    expect(res.body.errors[0].message).toMatch(/application\/json/i);
   });
 });

@@ -95,7 +95,10 @@ describe("GET /api/products - Integration tests", () => {
     const res = await request(app).get("/api/products");
 
     expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty("message", "Internal Server Error");
+    expect(res.body.errors[0]).toHaveProperty(
+      "message",
+      "Internal Server Error",
+    );
 
     await mongoose.connect(process.env.MONGO_URI as string); // reconnect to db for remaining lifecycle and cleanup
   });
@@ -133,7 +136,7 @@ describe("POST /api/products - Integration tests", () => {
     const res = await request(app).post("/api/products").send(payload);
 
     expect(res.status).toBe(400);
-    expect(res.body.message).toBeDefined();
+    expect(res.body.errors[0].message).toBeDefined();
   });
 
   it("returns 500 with message when saving product fails", async () => {
@@ -152,7 +155,7 @@ describe("POST /api/products - Integration tests", () => {
     const res = await request(app).post("/api/products").send(payload);
 
     expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty("message");
+    expect(res.body.errors[0]).toHaveProperty("message");
 
     saveSpy.mockRestore();
   });
@@ -201,7 +204,7 @@ describe("PUT /api/products/:id - Integration tests", () => {
       .send({ name: "non-existent name" });
 
     expect(res.status).toBe(404);
-    expect(res.body.message).toMatch(/found/);
+    expect(res.body.errors[0].message).toMatch(/found/);
   });
 
   it("returns 500 when database update operation fails", async () => {
@@ -222,7 +225,7 @@ describe("PUT /api/products/:id - Integration tests", () => {
       .send({ name: "updated name" });
 
     expect(res.status).toBe(500);
-    expect(res.body.message).toMatch(/Internal Server Error/i);
+    expect(res.body.errors[0].message).toMatch(/Internal Server Error/i);
 
     updateSpy.mockRestore();
   });
@@ -248,7 +251,7 @@ describe("DELETE /api/products/:id - Integration Tests", () => {
     const res = await request(app).delete(`/api/products/${id}`);
 
     expect(res.status).toBe(404);
-    expect(res.body.message).toMatch(/found/i);
+    expect(res.body.errors[0].message).toMatch(/found/i);
   });
 
   it("returns 500 with message when database operation fails", async () => {
@@ -265,6 +268,6 @@ describe("DELETE /api/products/:id - Integration Tests", () => {
     const res = await request(app).delete(`/api/products/${product._id}`);
 
     expect(res.status).toBe(500);
-    expect(res.body.message).toMatch(/Internal Server Error/i);
+    expect(res.body.errors[0].message).toMatch(/Internal Server Error/i);
   });
 });
