@@ -196,6 +196,34 @@ describe("PUT /api/products/:id - Integration tests", () => {
     expect(productInDb?.name).toBe(updatePayload.name);
   });
 
+  it("returns 400 with message for invalid product id sent", async () => {
+    const invalidMongoId = 1234;
+
+    const res = await request(app).put(`/api/products/${invalidMongoId}`).send({
+      name: "Updated Product",
+      price: 250,
+      image: "updated.jpg",
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors[0].message).toMatch(/[invalid id]/i);
+  });
+
+  it("returns 400 with message when no fields to udpate", async () => {
+    const product = await Product.create({
+      name: "Old Product",
+      price: 100,
+      image: "old.jpg",
+    });
+
+    const res = await request(app).put(`/api/products/${product._id}`).send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors[0].message).toMatch(
+      "At least one field is required to update",
+    );
+  });
+
   it("returns 404 with message when no product is found", async () => {
     const nonExistentId = new mongoose.Types.ObjectId();
 
