@@ -30,3 +30,27 @@ describe("requireJson", () => {
     expect(res.body.errors[0].message).toMatch(/application\/json/i);
   });
 });
+
+describe("handleInvalidJson middleware", () => {
+  it("returns 400 with message when invalid broken JSON in body", async () => {
+    const res = await request(app)
+      .post("/api/products")
+      .set("Content-Type", "application/json")
+      .send('{"name": "test"');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      errors: [{ message: "Invalid JSON body" }],
+    });
+  });
+
+  it("returns 200 when valid JSON body is sent", async () => {
+    const res = await request(app)
+      .post("/api/products")
+      .set("Content-Type", "application/json")
+      .send('{"name": "test", "price": 100, "image": "img.png"}');
+
+    expect(res.status).toBe(201);
+    expect(res.body.message).toBe("Product created successfully");
+  });
+});
