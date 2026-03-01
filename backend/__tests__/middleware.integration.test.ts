@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import { ProductMock } from "../models/product.model.mock.js";
 
@@ -32,6 +32,10 @@ describe("requireJson", () => {
 });
 
 describe("handleInvalidJson middleware", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   it("returns 400 with message when invalid broken JSON in body", async () => {
     const res = await request(app)
       .post("/api/products")
