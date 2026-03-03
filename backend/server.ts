@@ -48,7 +48,8 @@ export const startServer = async () => {
       logger.info(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    logger.error("Failed to start server", error);
+    logger.error("⚠️ Failed to start server");
+    logger.error(error);
     process.exit(1);
   }
 };
