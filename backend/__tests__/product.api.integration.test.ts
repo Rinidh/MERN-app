@@ -13,7 +13,7 @@ import mongoose, { ObjectId } from "mongoose";
 
 import { app } from "../server.js";
 import { connectDB } from "../config/db.js";
-import Product from "../models/product.model.js";
+import Product, { productSchema } from "../models/product.model.js";
 
 let mongoServer: MongoMemoryServer;
 
@@ -23,6 +23,8 @@ beforeAll(async () => {
   process.env.MONGO_URI = mongoUri;
 
   await connectDB();
+  productSchema.index({ name: 1 }, { unique: true }); // add indexes for all values of name field in new docs. Indexes are auto created for field-values declared in mongoose schema with `unique: true` but have to manually redeclare for mongo-memory-server
+  await mongoose.connection.syncIndexes();
 });
 
 afterAll(async () => {
@@ -105,6 +107,10 @@ describe("GET /api/products - Integration tests", () => {
 });
 
 describe("POST /api/products - Integration tests", () => {
+  afterEach(async () => {
+    await Product.deleteMany({});
+  });
+
   it("creates a product and returns 201 with product data and message", async () => {
     const payload = {
       name: "New Product",
@@ -137,6 +143,27 @@ describe("POST /api/products - Integration tests", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.errors[0].message).toBeDefined();
+  });
+
+  it("returns 409 with message when name is already taken", async () => {
+    const product = await Product.create({
+      name: "same name",
+      price: 100,
+      image: "img1.jpg",
+    });
+
+    const payload = {
+      name: "same name",
+      price: 200,
+      image: "img2.jpg",
+    };
+
+    const res = await request(app).post("/api/products").send(payload);
+
+    expect(res.status).toBe(409);
+    expect(res.body).toEqual({
+      errors: [{ message: "Field value already taken" }],
+    });
   });
 
   it("returns 500 with message when saving product fails", async () => {
