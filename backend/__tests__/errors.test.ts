@@ -58,4 +58,15 @@ describe("errorHandler (global error handler)", () => {
     });
     expect(logger.warn).toHaveBeenCalledOnce();
   });
+
+  it("calls `next` if response headers already sent", () => {
+    mockRes.headersSent = true;
+
+    const error = new Error("something went wrong");
+
+    errorHandler(error, mockReq as Request, mockRes as Response, mockNext);
+
+    expect(mockNext).toHaveBeenCalledWith(error);
+    expect(mockRes.status).not.toHaveBeenCalled();
+  });
 });
