@@ -15,6 +15,7 @@ import { initMongoDBLogger, logger } from "../logger.js";
 describe("Server bootstrap", () => {
   afterEach(() => {
     vi.resetModules();
+    vi.clearAllMocks();
     vi.restoreAllMocks();
     process.env.NODE_ENV = "test";
   });
@@ -49,5 +50,25 @@ describe("Server integration - unknown routes (non-production)", () => {
     const response = await request(app).get("/non-existent-route");
 
     expect(response.status).toBe(404);
+    expect(response.body.errors[0].message).toMatch(/not found/i);
+  });
+
+  it("logs error and exits process with status 1 on fatal errors", async () => {
+    const error = new Error("DB connection error");
+    vi.mocked(connectDB).mockImplementation(() => {
+      throw error;
+    });
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation(() => null as never);
+
+    const { startServer } = await import("../server.js");
+
+    startServer();
+
+    const [firstCall, secondCall] = vi.mocked(logger.error).mock.calls;
+    expect(firstCall[0]).toBe("⚠️ Failed to start server");
+    expect(secondCall[0]).toBe(error);
+    expect(exitSpy).toHaveBeenCalledExactlyOnceWith(1);
   });
 });
