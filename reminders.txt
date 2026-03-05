@@ -23,28 +23,32 @@ RESPONSE JSON FORMATS:
 ---------
 Project Folder Structure Tree:
 
-C:\Users\lenovo\documents\projects\mern-app
+root/
+├── AI-Context.zip
 ├── backend
 |  ├── config
 |  |  ├── db.ts
 |  |  └── env.ts
 |  ├── controllers
 |  |  └── product.controller.ts
-|  ├── dist
-|  |  ├── config
-|  |  |  ├── db.js
-|  |  |  └── env.js
-|  |  ├── controllers
-|  |  |  └── product.controller.js
-|  |  ├── logger.js  # sets up winston logger
-|  |  ├── models
-|  |  |  └── product.model.js
-|  |  ├── routes
-|  |  |  └── product.route.js
-|  |  └── server.js
+|  ├── errors
+|  |  ├── bad-request-error.ts
+|  |  ├── configuration-error.ts
+|  |  ├── custom-error.ts
+|  |  ├── database-error.ts
+|  |  ├── document-cast-error.ts
+|  |  ├── not-found-error.ts
+|  |  ├── unsupported-media-type-error.ts
+|  |  └── validation-error.ts
+|  ├── expt.ts
+|  ├── index.ts
 |  ├── logger.ts
+|  ├── middleware
+|  |  ├── error.ts
+|  |  ├── handleInvalidJson.ts
+|  |  └── requireJson.ts
 |  ├── models
-|  |  ├── product.model.mock.ts  # this file exports ProductMock for use in tests
+|  |  ├── product.model.mock.ts
 |  |  └── product.model.ts
 |  ├── routes
 |  |  └── product.route.ts
@@ -52,14 +56,17 @@ C:\Users\lenovo\documents\projects\mern-app
 |  ├── tsconfig.json
 |  ├── vitest.config.ts
 |  └── __tests__
+|     ├── db.test.ts
+|     ├── errors.test.ts
+|     ├── expt.test.ts
+|     ├── logger.test.ts
+|     ├── middleware.integration.test.ts
+|     ├── middleware.test.ts
+|     ├── product.api.integration.test.ts
 |     ├── product.controller.test.ts
 |     ├── product.route.test.ts
-|     └── setup.ts
+|     └── server.test.ts
 ├── frontend
-|  ├── dist
-|  |  ├── assets
-|  |  |  └── index-rOJyzkxi.js
-|  |  └── index.html
 |  ├── eslint.config.js
 |  ├── index.html
 |  ├── package-lock.json
@@ -76,24 +83,26 @@ C:\Users\lenovo\documents\projects\mern-app
 |  |  |  ├── CustomSpinner.tsx
 |  |  |  ├── HomePage.tsx
 |  |  |  ├── Navbar.tsx
-|  |  |  └── ProductCard.tsx
+|  |  |  ├── ProductCard.tsx
+|  |  |  └── __tests__
+|  |  |     └── expt.test.ts
 |  |  ├── index.css
 |  |  ├── main.tsx
 |  |  ├── pages
 |  |  ├── store
 |  |  |  └── product.ts
+|  |  ├── test
+|  |  |  └── setup.ts
 |  |  └── util
 |  |     └── index.ts
 |  ├── tsconfig.json
-|  └── vite.config.js
-├── logs
-|  ├── combined.log
-|  ├── errors.log
-|  ├── exceptions.log
-|  └── rejections.log
+|  └── vite.config.ts
 ├── package-lock.json
 ├── package.json
-└── reminders.txt
+├── README.md
+├── reminders.txt
+└── spec.md
+
 
 
 -----------
@@ -101,13 +110,4 @@ C:\Users\lenovo\documents\projects\mern-app
 
 
 
-
-
-   if (error instanceof DatabaseError) { // also make commit of customErrors status change to 500
-    logger.error(error);
-    res.status(error.statusCode).json({
-      errors: error.serializeErrors(),
-    });
-    return;
-  }
 
