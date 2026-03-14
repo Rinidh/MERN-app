@@ -30,11 +30,15 @@ export function Navbar(): JSX.Element {
         <HStack spacing={2}>
           <Link to="/create">
             <Button variant="outline">
-              <AddIcon boxSize={3} />
+              <AddIcon boxSize={3} aria-label="add icon" />
             </Button>
           </Link>
           <Button variant="outline" onClick={toggleColorMode}>
-            {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            {colorMode === "light" ? (
+              <MoonIcon aria-label="dark mode icon" />
+            ) : (
+              <SunIcon aria-label="light mode icon" />
+            )}
           </Button>
         </HStack>
       </Flex>
