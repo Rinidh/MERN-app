@@ -19,7 +19,7 @@ describe("Navbar", () => {
     const createLink = button.closest("a");
     expect(createLink).toBeInTheDocument();
 
-    const icon = createLink.querySelector("svg");
+    const icon = screen.getByLabelText(/add icon/);
     expect(icon).toHaveAttribute("aria-label", "add icon");
   });
 
