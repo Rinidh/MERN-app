@@ -35,25 +35,17 @@ describe("Navbar", () => {
 
   it("clicking theme switch button changes button icon", async () => {
     renderWithProviders(<Navbar />);
-    const darkButton = screen.queryByRole("button", {
-      name: /dark mode icon/i,
-    });
-    const lightButton = screen.queryByRole("button", {
-      name: /light mode icon/i,
-    });
-
     const user = userEvent.setup();
-    if (darkButton) {
-      await user.click(darkButton);
-      expect(
-        screen.queryByRole("button", { name: /light mode icon/i }),
-      ).toBeInTheDocument();
-    } else if (lightButton) {
-      await user.click(lightButton);
-      expect(
-        screen.queryByRole("button", { name: /dark mode icon/i }),
-      ).toBeInTheDocument();
-    }
+
+    const initialIcon = screen.getByLabelText(
+      /light mode icon|dark mode icon/i,
+    );
+    const button = initialIcon.closest("button");
+
+    await user.click(button);
+
+    const finalIcon = screen.getByLabelText(/light mode icon|dark mode icon/i);
+    expect(initialIcon).not.toEqual(finalIcon);
 
     // testing that app theme changes in whole is responsibility of chakra ui
   });
