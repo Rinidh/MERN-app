@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
+    "types": ["vitest/globals"],
 
     "strict": false,
     "noImplicitAny": false,
@@ -18,5 +19,5 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["src"]
+  "include": ["src", "__tests__"]
 }
