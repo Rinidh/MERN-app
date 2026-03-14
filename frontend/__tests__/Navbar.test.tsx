@@ -12,15 +12,12 @@ describe("Navbar", () => {
     expect(title).toHaveAttribute("href", "/");
   });
 
-  it("renders a link button with add icon and hyperlink of /create", () => {
+  it("renders a link button for creating new product", () => {
     renderWithProviders(<Navbar />);
 
-    const button = screen.getByRole("link", { name: "add icon" });
+    const button = screen.getByRole("button", { name: "create product" });
     const createLink = button.closest("a");
-    expect(createLink).toBeInTheDocument();
-
-    const icon = screen.getByLabelText(/add icon/);
-    expect(icon).toHaveAttribute("aria-label", "add icon");
+    expect(createLink).toHaveAttribute("href", "/create");
   });
 
   it("renders a theme switch button holding an icon", () => {

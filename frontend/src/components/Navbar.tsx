@@ -29,7 +29,7 @@ export function Navbar(): JSX.Element {
 
         <HStack spacing={2}>
           <Link to="/create">
-            <Button variant="outline">
+            <Button variant="outline" aria-label="create product">
               <AddIcon boxSize={3} aria-label="add icon" />
             </Button>
           </Link>
