@@ -4,11 +4,6 @@ import { renderWithProviders } from "../src/util/test-utils";
 import userEvent from "@testing-library/user-event";
 
 describe("Navbar", () => {
-  const getThemeIcon = () => {
-    const icon = screen.getByLabelText(/\b(dark mode icon|light mode icon)\b/i);
-    return { icon, currentLabel: icon.getAttribute("aria-label") };
-  };
-
   it("renders title with logo which are a link to the root", () => {
     renderWithProviders(<Navbar />);
 
@@ -20,8 +15,8 @@ describe("Navbar", () => {
   it("renders a link button with add icon and hyperlink of /create", () => {
     renderWithProviders(<Navbar />);
 
-    const links = screen.getAllByRole("link");
-    const createLink = links.find((l) => l.getAttribute("href") === "/create");
+    const button = screen.getByRole("link", { name: "add icon" });
+    const createLink = button.closest("a");
     expect(createLink).toBeInTheDocument();
 
     const icon = createLink.querySelector("svg");
@@ -31,21 +26,33 @@ describe("Navbar", () => {
   it("renders a theme switch button holding an icon", () => {
     renderWithProviders(<Navbar />);
 
-    expect(getThemeIcon().icon.parentElement).toBeInstanceOf(HTMLButtonElement);
+    const button = screen.getByRole("button", {
+      name: /\b(dark mode icon|light mode icon)\b/i,
+    });
+
+    expect(button).toBeInTheDocument();
   });
 
   it("clicking theme switch button changes button icon", async () => {
     renderWithProviders(<Navbar />);
-    const { icon, currentLabel } = getThemeIcon();
-    const button = icon.parentElement;
+    const darkButton = screen.queryByRole("button", {
+      name: /dark mode icon/i,
+    });
+    const lightButton = screen.queryByRole("button", {
+      name: /light mode icon/i,
+    });
+
     const user = userEvent.setup();
-
-    await user.click(button);
-
-    if (currentLabel === "dark mode icon") {
-      expect(getThemeIcon().currentLabel).toBe("light mode icon");
-    } else if (currentLabel === "light mode icon") {
-      expect(getThemeIcon().currentLabel).toBe("dark mode icon");
+    if (darkButton) {
+      await user.click(darkButton);
+      expect(
+        screen.queryByRole("button", { name: /light mode icon/i }),
+      ).toBeInTheDocument();
+    } else if (lightButton) {
+      await user.click(lightButton);
+      expect(
+        screen.queryByRole("button", { name: /dark mode icon/i }),
+      ).toBeInTheDocument();
     }
 
     // testing that app theme changes in whole is responsibility of chakra ui
