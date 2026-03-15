@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { HomePage } from "../../src/components/HomePage";
 import { useProductStore } from "../../src/store/product";
 import { ProductCard } from "../../src/components/ProductCard";
+import { CustomSpinner } from "../../src/components/CustomSpinner";
 
 const fetchProducts = vi.fn();
 const setMessage = vi.fn();
@@ -15,6 +16,11 @@ vi.mock("../../src/store/product", () => ({
 
 vi.mock("../../src/components/ProductCard", () => ({
   ProductCard: vi.fn((product: any) => <div data-testid="product-card"></div>),
+}));
+
+vi.mock("../../src/components/CustomSpinner", () => ({
+  CustomSpinner: ({ isLoading }: { isLoading: boolean }) =>
+    isLoading && <div data-testid="spinner"></div>,
 }));
 
 const renderPage = () => {
@@ -68,11 +74,24 @@ describe("HomePage", () => {
     const productPassed = vi.mocked(ProductCard).mock.calls[0][0].product; // .mock.calls.firstCall.firstArg is the props object passed by React
     expect(productPassed._id).toBe("id1");
   });
+
+  it("renders empty state message when there are no products and not loading", () => {
+    renderPage();
+
+    expect(screen.getByText(/no products found/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /create/i })).toBeInTheDocument();
+  });
+
+  it("renders spinner when loading state", () => {
+    storeState.isLoading = true;
+
+    renderPage();
+
+    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+  });
 });
 
 // TESTS remaining:
-// renders empty state message when there are no products and not loading
-// renders spinner when loading state
 // error state opens the modal and shows error message
 // Retry button in modal triggers fetchProducts
 // success message triggers a toast
