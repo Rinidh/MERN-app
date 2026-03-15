@@ -106,7 +106,10 @@ export const HomePage = (): JSX.Element => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent bg={useColorModeValue("pink.100", "red.900")}>
+        <ModalContent
+          bg={useColorModeValue("pink.100", "red.900")}
+          aria-label="error dialog"
+        >
           <ModalHeader>Error</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{error}</ModalBody>

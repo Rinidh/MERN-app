@@ -89,10 +89,18 @@ describe("HomePage", () => {
 
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
+
+  it("error state opens the modal and shows error message", () => {
+    storeState.error = "Network Error";
+
+    renderPage();
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByLabelText("error dialog")).toBeInTheDocument();
+  });
 });
 
 // TESTS remaining:
-// error state opens the modal and shows error message
 // Retry button in modal triggers fetchProducts
 // success message triggers a toast
 // error message triggers a toast
