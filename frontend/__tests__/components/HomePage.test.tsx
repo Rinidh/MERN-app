@@ -3,19 +3,18 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HomePage } from "../../src/components/HomePage";
 import { useProductStore } from "../../src/store/product";
+import { ProductCard } from "../../src/components/ProductCard";
 
-const fetchProductsMock = vi.fn();
-const setMessageMock = vi.fn();
+const fetchProducts = vi.fn();
+const setMessage = vi.fn();
+let storeState;
 
 vi.mock("../../src/store/product", () => ({
-  useProductStore: () => ({
-    fetchProducts: fetchProductsMock,
-    setMessage: setMessageMock,
-    products: [],
-    error: "",
-    isLoading: false,
-    message: "",
-  }),
+  useProductStore: () => storeState,
+}));
+
+vi.mock("../../src/components/ProductCard", () => ({
+  ProductCard: vi.fn((product: any) => <div data-testid="product-card"></div>),
 }));
 
 const renderPage = () => {
@@ -31,12 +30,21 @@ const renderPage = () => {
 describe("HomePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    storeState = {
+      fetchProducts,
+      setMessage,
+      products: [],
+      error: "",
+      isLoading: false,
+      message: "",
+    };
   });
 
   it("calls fetchProducts on mount", () => {
     renderPage();
 
-    expect(fetchProductsMock).toHaveBeenCalledOnce();
+    expect(fetchProducts).toHaveBeenCalledOnce();
   });
 
   it("renders page heading about products", () => {
@@ -46,10 +54,23 @@ describe("HomePage", () => {
       screen.getByRole("heading", { name: /products/i }),
     ).toBeInTheDocument();
   });
+
+  it("renders products from store as ProductCards", () => {
+    storeState.products = [
+      { _id: "id1", name: "product1", price: 10, image: "img1" },
+      { _id: "id2", name: "product2", price: 20, image: "img2" },
+    ];
+
+    renderPage();
+
+    const cards = screen.getAllByTestId("product-card");
+    expect(cards.length).toBe(2);
+    const productPassed = vi.mocked(ProductCard).mock.calls[0][0].product; // .mock.calls.firstCall.firstArg is the props object passed by React
+    expect(productPassed._id).toBe("id1");
+  });
 });
 
 // TESTS remaining:
-// renders products from store as ProductCards
 // renders empty state message when there are no products and not loading
 // renders spinner when loading state
 // error state opens the modal and shows error message
