@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
-import { Navbar } from "../src/components/Navbar";
-import { renderWithProviders } from "../src/util/test-utils";
+import { Navbar } from "../../src/components/Navbar";
+import { renderWithProviders } from "../../src/util/test-utils";
 import userEvent from "@testing-library/user-event";
 
 describe("Navbar", () => {
