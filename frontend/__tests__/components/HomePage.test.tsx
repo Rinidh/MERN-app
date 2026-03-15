@@ -91,7 +91,7 @@ describe("HomePage", () => {
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
 
-  it("error state opens the modal and shows error message", () => {
+  it("error state opens the modal and toast with error message", () => {
     storeState.error = "Network Error";
 
     renderPage();
@@ -122,7 +122,3 @@ describe("HomePage", () => {
     expect(screen.getByText("completed")).toBeInTheDocument();
   });
 });
-
-// TESTS remaining:
-// success message triggers a toast
-// error message triggers a toast
