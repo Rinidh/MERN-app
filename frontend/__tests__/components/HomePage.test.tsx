@@ -112,6 +112,15 @@ describe("HomePage", () => {
 
     expect(fetchProducts).toHaveBeenCalledTimes(2); // the first call is default on render and the second call is by clicking the retry button
   });
+
+  it("success message triggers a toast", () => {
+    storeState.message = "completed";
+
+    renderPage();
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(screen.getByText("completed")).toBeInTheDocument();
+  });
 });
 
 // TESTS remaining:
