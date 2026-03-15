@@ -5,6 +5,7 @@ import { HomePage } from "../../src/components/HomePage";
 import { useProductStore } from "../../src/store/product";
 import { ProductCard } from "../../src/components/ProductCard";
 import { CustomSpinner } from "../../src/components/CustomSpinner";
+import userEvent from "@testing-library/user-event";
 
 const fetchProducts = vi.fn();
 const setMessage = vi.fn();
@@ -101,9 +102,18 @@ describe("HomePage", () => {
     const modalAndToast = screen.getAllByText(/network error/i); // both a toast and the modal display the same error message in error state
     expect(modalAndToast.length).toBe(2);
   });
+
+  it("Retry button in modal triggers fetchProducts", async () => {
+    storeState.error = "Failed!";
+    renderPage();
+
+    const button = screen.getByRole("button", { name: /retry/i });
+    await userEvent.click(button);
+
+    expect(fetchProducts).toHaveBeenCalledTimes(2); // the first call is default on render and the second call is by clicking the retry button
+  });
 });
 
 // TESTS remaining:
-// Retry button in modal triggers fetchProducts
 // success message triggers a toast
 // error message triggers a toast
