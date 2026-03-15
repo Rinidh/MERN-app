@@ -1,5 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HomePage } from "../../src/components/HomePage";
 import { useProductStore } from "../../src/store/product";
@@ -29,16 +29,26 @@ const renderPage = () => {
 };
 
 describe("HomePage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("calls fetchProducts on mount", () => {
     renderPage();
 
     expect(fetchProductsMock).toHaveBeenCalledOnce();
   });
+
+  it("renders page heading about products", () => {
+    renderPage();
+
+    expect(
+      screen.getByRole("heading", { name: /products/i }),
+    ).toBeInTheDocument();
+  });
 });
 
-// TESTS:
-// calls fetchProducts on mount
-// renders page heading about products
+// TESTS remaining:
 // renders products from store as ProductCards
 // renders empty state message when there are no products and not loading
 // renders spinner when loading state
