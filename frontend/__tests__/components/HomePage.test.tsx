@@ -97,6 +97,9 @@ describe("HomePage", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByLabelText("error dialog")).toBeInTheDocument();
+
+    const modalAndToast = screen.getAllByText(/network error/i); // both a toast and the modal display the same error message in error state
+    expect(modalAndToast.length).toBe(2);
   });
 });
 
