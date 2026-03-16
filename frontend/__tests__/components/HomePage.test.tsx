@@ -16,7 +16,9 @@ vi.mock("../../src/store/product", () => ({
 }));
 
 vi.mock("../../src/components/ProductCard", () => ({
-  ProductCard: vi.fn((product: any) => <div data-testid="product-card"></div>),
+  ProductCard: vi.fn(({ product }: { product: any }) => (
+    <div data-testid="product-card"></div>
+  )),
 }));
 
 vi.mock("../../src/components/CustomSpinner", () => ({
