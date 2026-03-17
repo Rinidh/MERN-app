@@ -17,6 +17,7 @@ export const CustomSpinner = ({
       backgroundColor={useColorModeValue("whiteAlpha.600", "blackAlpha.600")}
     >
       <Spinner
+        role="status"
         position={"absolute"}
         top={"50%"}
         left={"50%"}

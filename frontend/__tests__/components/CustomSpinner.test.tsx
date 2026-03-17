@@ -16,6 +16,6 @@ describe("CustomSpinner", () => {
       </ChakraProvider>,
     );
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument(); // Chakra UI renders a div with text of loading for accessibility assistance but hides it using CSS
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 });
