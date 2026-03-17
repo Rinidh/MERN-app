@@ -15,6 +15,7 @@ export const CustomSpinner = ({
       right={0}
       left={0}
       backgroundColor={useColorModeValue("whiteAlpha.600", "blackAlpha.600")}
+      data-testid="overlay"
     >
       <Spinner
         role="status"

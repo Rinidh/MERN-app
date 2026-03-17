@@ -18,4 +18,22 @@ describe("CustomSpinner", () => {
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
+
+  it("renders a fullscreen overlay", () => {
+    render(
+      <ChakraProvider>
+        <CustomSpinner isLoading={true} />
+      </ChakraProvider>,
+    );
+
+    const overlay = screen.getByTestId("overlay");
+    expect(overlay).toBeInTheDocument();
+    expect(overlay).toHaveStyle({
+      position: "fixed",
+      top: "0px",
+      bottom: "0px",
+      right: "0px",
+      left: "0px",
+    });
+  });
 });
