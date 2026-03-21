@@ -34,7 +34,7 @@ describe("ProductCard", () => {
     expect(screen.getByRole("button", { name: /delete/i })).toBeInTheDocument();
   });
 
-  it("modal opens on clicking edit button", async () => {
+  it("modal opens on clicking edit button to display inputs with current product name, price and image", async () => {
     const product: Product = {
       _id: "id1",
       name: "product1",
@@ -47,6 +47,11 @@ describe("ProductCard", () => {
     await userEvent.click(editButton);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/name/i)).toHaveValue(product.name);
+    expect(screen.getByPlaceholderText(/price/i)).toHaveValue(
+      String(product.price),
+    );
+    expect(screen.getByPlaceholderText(/image/i)).toHaveValue(product.image);
   });
 
   it("calls deleteProduct with product id on clicking delete button", async () => {
@@ -65,6 +70,5 @@ describe("ProductCard", () => {
   });
 });
 
-// product modal displays inputs with current product name, price and image
 // update button in modal is disabled until change in field values
 // clicking update button in modal calls updateProduct with product id and new values
