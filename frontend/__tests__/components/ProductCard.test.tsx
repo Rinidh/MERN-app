@@ -89,25 +89,20 @@ describe("ProductCard", () => {
       expect(screen.getByPlaceholderText(/image/i)).toHaveValue(product.image);
     });
 
-    it("closes modal when cancel button is clicked", async () => {
+    it("closes modal via cancel and close buttons", async () => {
       const { user } = setup();
       await openModal(user);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       await user.click(cancelButton);
-
       await waitFor(() =>
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
       );
-    });
 
-    it("closes modal when close button is clicked", async () => {
-      const { user } = setup();
       await openModal(user);
 
       const closeButton = screen.getByRole("button", { name: "Close" });
       await user.click(closeButton);
-
       await waitFor(() =>
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
       );
