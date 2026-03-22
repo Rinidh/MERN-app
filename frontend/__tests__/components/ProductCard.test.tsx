@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { ProductCard } from "../../src/components/ProductCard";
 import { Product } from "../../src/store/product";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 const deleteProduct = vi.fn();
 const updateProduct = vi.fn();
@@ -73,10 +73,14 @@ describe("ProductCard", () => {
   });
 
   describe("modal and product-update form", () => {
-    it("modal displays inputs with current product name, price and image", async () => {
-      const { user } = setup();
+    const openModal = async (user: UserEvent) => {
       const editButton = screen.getByRole("button", { name: /edit/i });
       await user.click(editButton);
+    };
+
+    it("modal displays inputs with current product name, price and image", async () => {
+      const { user } = setup();
+      await openModal(user);
 
       expect(screen.getByPlaceholderText(/name/i)).toHaveValue(product.name);
       expect(screen.getByPlaceholderText(/price/i)).toHaveValue(
@@ -87,8 +91,7 @@ describe("ProductCard", () => {
 
     it("closes modal when cancel button is clicked", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       await user.click(cancelButton);
@@ -100,8 +103,7 @@ describe("ProductCard", () => {
 
     it("closes modal when close button is clicked", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       const closeButton = screen.getByRole("button", { name: "Close" });
       await user.click(closeButton);
@@ -113,8 +115,7 @@ describe("ProductCard", () => {
 
     it("updates inputs values when user types", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       const nameInput = screen.getByPlaceholderText(/name/i);
       const priceInput = screen.getByPlaceholderText(/price/i);
@@ -136,8 +137,7 @@ describe("ProductCard", () => {
 
     it("update button in modal is disabled until change in field values", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       expect(screen.getByRole("button", { name: /update/i })).toBeDisabled();
 
@@ -149,8 +149,7 @@ describe("ProductCard", () => {
 
     it("keeps update button disabled when only whitespace changes occur", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       const priceInput = screen.getByPlaceholderText(/price/i);
       await user.type(priceInput, "   ");
@@ -160,8 +159,7 @@ describe("ProductCard", () => {
 
     it("clicking update button in modal calls updateProduct with product id and new values", async () => {
       const { user } = setup();
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
+      await openModal(user);
 
       const nameInput = screen.getByPlaceholderText(/name/i);
       await user.clear(nameInput);
