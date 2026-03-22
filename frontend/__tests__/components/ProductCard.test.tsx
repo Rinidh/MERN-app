@@ -110,6 +110,34 @@ describe("ProductCard", () => {
     );
   });
 
+  it("updates inputs values when user types", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    const user = userEvent.setup();
+    await user.click(editButton);
+
+    const nameInput = screen.getByPlaceholderText(/name/i);
+    const priceInput = screen.getByPlaceholderText(/price/i);
+    const imageInput = screen.getByPlaceholderText(/image/i);
+    await user.type(nameInput, "added to name");
+    await user.type(priceInput, ".5");
+    await user.type(imageInput, ".png");
+
+    expect(
+      screen.getByDisplayValue(product.name + "added to name"),
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue(product.price + ".5")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue(product.image + ".png"),
+    ).toBeInTheDocument();
+  });
+
   it("calls deleteProduct with product id on clicking delete button", async () => {
     const product: Product = {
       _id: "id1",
