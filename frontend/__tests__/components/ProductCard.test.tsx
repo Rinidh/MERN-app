@@ -123,13 +123,9 @@ describe("ProductCard", () => {
       await user.type(priceInput, ".5");
       await user.type(imageInput, ".png");
 
-      expect(
-        modal.getByDisplayValue(product.name + "added to name"),
-      ).toBeInTheDocument();
-      expect(modal.getByDisplayValue(product.price + ".5")).toBeInTheDocument();
-      expect(
-        modal.getByDisplayValue(product.image + ".png"),
-      ).toBeInTheDocument();
+      expect(nameInput).toHaveValue(product.name + "added to name");
+      expect(priceInput).toHaveValue(product.price + ".5");
+      expect(imageInput).toHaveValue(product.image + ".png");
     });
 
     it("update button in modal is disabled until change in field values", async () => {
