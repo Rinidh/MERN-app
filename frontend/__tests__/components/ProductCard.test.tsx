@@ -83,6 +83,7 @@ describe("ProductCard", () => {
     await userEvent.click(deleteButton);
 
     expect(deleteProduct).toHaveBeenCalledOnce();
+    expect(deleteProduct).toHaveBeenCalledWith(product._id);
   });
 
   it("update button in modal is disabled until change in field values", async () => {
