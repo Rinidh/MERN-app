@@ -40,14 +40,14 @@ export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
     {
       color: "white",
       bg: "gray.800",
-    }
+    },
   );
   const { deleteProduct, updateProduct } = useProductStore();
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const areSameValues =
     product.name === currentValues.name.trim() &&
-    String(product.price) === currentValues.price && //
+    String(product.price) === currentValues.price.trim() && //
     product.image === currentValues.image.trim();
 
   return (
