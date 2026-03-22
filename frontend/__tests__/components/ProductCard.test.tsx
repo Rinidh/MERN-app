@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import { ProductCard } from "../../src/components/ProductCard";
 import { Product } from "../../src/store/product";
 import userEvent from "@testing-library/user-event";
-import { useProductStore } from "../../src/store/product";
 
 const deleteProduct = vi.fn();
 const updateProduct = vi.fn();
@@ -36,7 +35,7 @@ describe("ProductCard", () => {
     expect(screen.getByRole("button", { name: /delete/i })).toBeInTheDocument();
   });
 
-  it("modal opens on clicking edit button to display inputs with current product name, price and image", async () => {
+  it("does not render modal initially and it opens on clicking edit button", async () => {
     const product: Product = {
       _id: "id1",
       name: "product1",
@@ -45,10 +44,25 @@ describe("ProductCard", () => {
     };
     render(<ProductCard product={product} />);
 
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
     const editButton = screen.getByRole("button", { name: /edit/i });
     await userEvent.click(editButton);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("modal displays inputs with current product name, price and image", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    await userEvent.click(editButton);
+
     expect(screen.getByPlaceholderText(/name/i)).toHaveValue(product.name);
     expect(screen.getByPlaceholderText(/price/i)).toHaveValue(
       String(product.price),
