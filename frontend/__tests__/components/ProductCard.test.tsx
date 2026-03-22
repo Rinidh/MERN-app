@@ -166,16 +166,12 @@ describe("ProductCard", () => {
     const user = userEvent.setup();
     await user.click(editButton);
 
-    expect(screen.getByRole("button", { name: /update/i })).toHaveAttribute(
-      "disabled",
-    );
+    expect(screen.getByRole("button", { name: /update/i })).toBeDisabled();
 
     const nameInput = screen.getByPlaceholderText(/name/i);
     await user.type(nameInput, "new product name");
 
-    expect(screen.getByRole("button", { name: /update/i })).not.toHaveAttribute(
-      "disabled",
-    );
+    expect(screen.getByRole("button", { name: /update/i })).toBeEnabled();
   });
 
   it("clicking update button in modal calls updateProduct with product id and new values", async () => {
