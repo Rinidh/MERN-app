@@ -198,5 +198,8 @@ describe("ProductCard", () => {
       price: "10",
       image: "img1",
     });
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
   });
 });
