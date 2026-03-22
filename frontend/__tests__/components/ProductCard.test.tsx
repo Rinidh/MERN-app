@@ -13,16 +13,22 @@ vi.mock("../../src/store/product", () => ({
   }),
 }));
 
+const product: Product = {
+  _id: "id1",
+  name: "product1",
+  price: 10,
+  image: "img1",
+};
+
+const setup = () => {
+  const user = userEvent.setup();
+  render(<ProductCard product={product} />);
+  return { user };
+};
+
 describe("ProductCard", () => {
   it("renders a card with image, name heading, price, edit and delete buttons", () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-
-    render(<ProductCard product={product} />);
+    setup();
 
     expect(screen.getByRole("img")).toHaveAttribute("src", product.image);
     expect(
@@ -36,32 +42,20 @@ describe("ProductCard", () => {
   });
 
   it("does not render modal initially and it opens on clicking edit button", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     const editButton = screen.getByRole("button", { name: /edit/i });
-    await userEvent.click(editButton);
+    await user.click(editButton);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   it("modal displays inputs with current product name, price and image", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    await userEvent.click(editButton);
+    await user.click(editButton);
 
     expect(screen.getByPlaceholderText(/name/i)).toHaveValue(product.name);
     expect(screen.getByPlaceholderText(/price/i)).toHaveValue(
@@ -71,15 +65,8 @@ describe("ProductCard", () => {
   });
 
   it("closes modal when cancel button is clicked", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
@@ -91,15 +78,8 @@ describe("ProductCard", () => {
   });
 
   it("closes modal when close button is clicked", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     const closeButton = screen.getByRole("button", { name: "Close" });
@@ -111,15 +91,8 @@ describe("ProductCard", () => {
   });
 
   it("updates inputs values when user types", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     const nameInput = screen.getByPlaceholderText(/name/i);
@@ -139,13 +112,7 @@ describe("ProductCard", () => {
   });
 
   it("calls deleteProduct with product id on clicking delete button", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    setup();
 
     const deleteButton = screen.getByRole("button", { name: /delete/i });
     await userEvent.click(deleteButton);
@@ -155,15 +122,8 @@ describe("ProductCard", () => {
   });
 
   it("update button in modal is disabled until change in field values", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     expect(screen.getByRole("button", { name: /update/i })).toBeDisabled();
@@ -175,15 +135,8 @@ describe("ProductCard", () => {
   });
 
   it("keeps update button disabled when only whitespace changes occur", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     const priceInput = screen.getByPlaceholderText(/price/i);
@@ -193,15 +146,8 @@ describe("ProductCard", () => {
   });
 
   it("clicking update button in modal calls updateProduct with product id and new values", async () => {
-    const product: Product = {
-      _id: "id1",
-      name: "product1",
-      price: 10,
-      image: "img1",
-    };
-    render(<ProductCard product={product} />);
+    const { user } = setup();
     const editButton = screen.getByRole("button", { name: /edit/i });
-    const user = userEvent.setup();
     await user.click(editButton);
 
     const nameInput = screen.getByPlaceholderText(/name/i);
