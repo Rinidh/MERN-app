@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { ProductCard } from "../../src/components/ProductCard";
 import { Product } from "../../src/store/product";
 import userEvent, { UserEvent } from "@testing-library/user-event";
@@ -76,17 +76,21 @@ describe("ProductCard", () => {
     const openModal = async (user: UserEvent) => {
       const editButton = screen.getByRole("button", { name: /edit/i });
       await user.click(editButton);
+
+      const modal = within(screen.getByRole("dialog"));
+      return { modal };
     };
 
     it("modal displays inputs with current product name, price and image", async () => {
       const { user } = setup();
-      await openModal(user);
 
-      expect(screen.getByPlaceholderText(/name/i)).toHaveValue(product.name);
-      expect(screen.getByPlaceholderText(/price/i)).toHaveValue(
+      const { modal } = await openModal(user);
+
+      expect(modal.getByPlaceholderText(/name/i)).toHaveValue(product.name);
+      expect(modal.getByPlaceholderText(/price/i)).toHaveValue(
         String(product.price),
       );
-      expect(screen.getByPlaceholderText(/image/i)).toHaveValue(product.image);
+      expect(modal.getByPlaceholderText(/image/i)).toHaveValue(product.image);
     });
 
     it("closes modal via cancel and close buttons", async () => {
@@ -110,56 +114,54 @@ describe("ProductCard", () => {
 
     it("updates inputs values when user types", async () => {
       const { user } = setup();
-      await openModal(user);
+      const { modal } = await openModal(user);
 
-      const nameInput = screen.getByPlaceholderText(/name/i);
-      const priceInput = screen.getByPlaceholderText(/price/i);
-      const imageInput = screen.getByPlaceholderText(/image/i);
+      const nameInput = modal.getByPlaceholderText(/name/i);
+      const priceInput = modal.getByPlaceholderText(/price/i);
+      const imageInput = modal.getByPlaceholderText(/image/i);
       await user.type(nameInput, "added to name");
       await user.type(priceInput, ".5");
       await user.type(imageInput, ".png");
 
       expect(
-        screen.getByDisplayValue(product.name + "added to name"),
+        modal.getByDisplayValue(product.name + "added to name"),
       ).toBeInTheDocument();
+      expect(modal.getByDisplayValue(product.price + ".5")).toBeInTheDocument();
       expect(
-        screen.getByDisplayValue(product.price + ".5"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByDisplayValue(product.image + ".png"),
+        modal.getByDisplayValue(product.image + ".png"),
       ).toBeInTheDocument();
     });
 
     it("update button in modal is disabled until change in field values", async () => {
       const { user } = setup();
-      await openModal(user);
+      const { modal } = await openModal(user);
 
-      expect(screen.getByRole("button", { name: /update/i })).toBeDisabled();
+      expect(modal.getByRole("button", { name: /update/i })).toBeDisabled();
 
-      const nameInput = screen.getByPlaceholderText(/name/i);
+      const nameInput = modal.getByPlaceholderText(/name/i);
       await user.type(nameInput, "new product name");
 
-      expect(screen.getByRole("button", { name: /update/i })).toBeEnabled();
+      expect(modal.getByRole("button", { name: /update/i })).toBeEnabled();
     });
 
     it("keeps update button disabled when only whitespace changes occur", async () => {
       const { user } = setup();
-      await openModal(user);
+      const { modal } = await openModal(user);
 
-      const priceInput = screen.getByPlaceholderText(/price/i);
+      const priceInput = modal.getByPlaceholderText(/price/i);
       await user.type(priceInput, "   ");
 
-      expect(screen.getByRole("button", { name: /update/i })).toBeDisabled();
+      expect(modal.getByRole("button", { name: /update/i })).toBeDisabled();
     });
 
     it("clicking update button in modal calls updateProduct with product id and new values", async () => {
       const { user } = setup();
-      await openModal(user);
+      const { modal } = await openModal(user);
 
-      const nameInput = screen.getByPlaceholderText(/name/i);
+      const nameInput = modal.getByPlaceholderText(/name/i);
       await user.clear(nameInput);
       await user.type(nameInput, "new product");
-      const updateButton = screen.getByRole("button", { name: /update/i });
+      const updateButton = modal.getByRole("button", { name: /update/i });
       await user.click(updateButton);
 
       expect(updateProduct).toHaveBeenCalledOnce();
