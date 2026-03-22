@@ -26,6 +26,10 @@ const setup = () => {
   return { user };
 };
 
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 describe("ProductCard", () => {
   it("renders a card with image, name heading, price, edit and delete buttons", () => {
     setup();
