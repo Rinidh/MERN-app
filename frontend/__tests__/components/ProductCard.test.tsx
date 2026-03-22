@@ -68,7 +68,30 @@ describe("ProductCard", () => {
 
     expect(deleteProduct).toHaveBeenCalledOnce();
   });
+
+  it("update button in modal is disabled until change in field values", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    const user = userEvent.setup();
+    await user.click(editButton);
+
+    expect(screen.getByRole("button", { name: /update/i })).toHaveAttribute(
+      "disabled",
+    );
+
+    const nameInput = screen.getByPlaceholderText(/name/i);
+    await user.type(nameInput, "new product name");
+
+    expect(screen.getByRole("button", { name: /update/i })).not.toHaveAttribute(
+      "disabled",
+    );
+  });
 });
 
-// update button in modal is disabled until change in field values
 // clicking update button in modal calls updateProduct with product id and new values
