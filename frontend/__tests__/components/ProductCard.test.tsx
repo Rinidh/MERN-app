@@ -5,10 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { useProductStore } from "../../src/store/product";
 
 const deleteProduct = vi.fn();
+const updateProduct = vi.fn();
 
 vi.mock("../../src/store/product", () => ({
   useProductStore: () => ({
     deleteProduct,
+    updateProduct,
   }),
 }));
 
@@ -92,6 +94,30 @@ describe("ProductCard", () => {
       "disabled",
     );
   });
-});
 
-// clicking update button in modal calls updateProduct with product id and new values
+  it("clicking update button in modal calls updateProduct with product id and new values", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    const user = userEvent.setup();
+    await user.click(editButton);
+
+    const nameInput = screen.getByPlaceholderText(/name/i);
+    await user.clear(nameInput);
+    await user.type(nameInput, "new product");
+    const updateButton = screen.getByRole("button", { name: /update/i });
+    await user.click(updateButton);
+
+    expect(updateProduct).toHaveBeenCalledOnce();
+    expect(updateProduct).toHaveBeenCalledWith(product._id, {
+      name: "new product",
+      price: "10",
+      image: "img1",
+    });
+  });
+});
