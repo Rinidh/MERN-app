@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { ProductCard } from "../../src/components/ProductCard";
 import { Product } from "../../src/store/product";
 import userEvent from "@testing-library/user-event";
@@ -68,6 +68,46 @@ describe("ProductCard", () => {
       String(product.price),
     );
     expect(screen.getByPlaceholderText(/image/i)).toHaveValue(product.image);
+  });
+
+  it("closes modal when cancel button is clicked", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    const user = userEvent.setup();
+    await user.click(editButton);
+
+    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    await user.click(cancelButton);
+
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+  });
+
+  it("closes modal when close button is clicked", async () => {
+    const product: Product = {
+      _id: "id1",
+      name: "product1",
+      price: 10,
+      image: "img1",
+    };
+    render(<ProductCard product={product} />);
+    const editButton = screen.getByRole("button", { name: /edit/i });
+    const user = userEvent.setup();
+    await user.click(editButton);
+
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    await user.click(closeButton);
+
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
   });
 
   it("calls deleteProduct with product id on clicking delete button", async () => {
