@@ -13,7 +13,7 @@ describe("CreatePage", () => {
       screen.getByRole("heading", { name: /create/i }),
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/name/i)).toHaveValue("");
-    expect(screen.getByPlaceholderText(/price/i)).toHaveValue(null); // value is null initially because of type="number" attribute
+    expect(screen.getByPlaceholderText(/price/i)).toHaveValue(""); // value is null initially because of type="number" attribute
     expect(screen.getByPlaceholderText(/image/i)).toHaveValue("");
     expect(screen.getByRole("button", { name: /add/i })).toBeInTheDocument();
   });
@@ -29,7 +29,7 @@ describe("CreatePage", () => {
     await user.type(imageInput, "img.png");
 
     expect(nameInput).toHaveValue("product name");
-    expect(priceInput).toHaveValue(10);
+    expect(priceInput).toHaveValue("10");
     expect(imageInput).toHaveValue("img.png");
   });
 });

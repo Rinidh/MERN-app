@@ -29,7 +29,7 @@ type ProductCardProps = { product: Product };
 export const ProductCard = ({ product }: ProductCardProps): JSX.Element => {
   const [currentValues, setCurrentValues] = useState<ProductInput>({
     name: product.name || "",
-    price: String(product.price) || "",
+    price: String(product.price) || "", // price is a string instead of number in ProductInput type because it has centralized type-checking and number conversion in store state functions, createProduct and updateProduct
     image: product.image || "",
   });
   const styles = useColorModeValue(

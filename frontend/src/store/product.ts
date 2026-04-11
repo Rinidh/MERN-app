@@ -18,7 +18,7 @@ export type Product = {
  */
 export type ProductInput = {
   name: string;
-  price: string;
+  price: string; // price is a string instead of number in ProductInput type because it has centralized type-checking and number conversion in store state functions, createProduct and updateProduct
   image: string;
 };
 
@@ -56,7 +56,7 @@ type ProductStore = {
   deleteProduct: (id: string) => Promise<void>;
   updateProduct: (
     pid: string,
-    updatedProduct: Partial<ProductInput>
+    updatedProduct: Partial<ProductInput>,
   ) => Promise<void>;
 };
 

@@ -74,10 +74,9 @@ export const CreatePage = () => {
                 }
               />
               <Input
-                type="number"
                 placeholder="Price"
                 name="price"
-                value={fieldValues.price || ""}
+                value={fieldValues.price} // price is a string instead of number in ProductInput type because it has centralized type-checking and number conversion in store state functions, createProduct and updateProduct
                 onChange={(e) =>
                   setFieldValues({
                     ...fieldValues,
