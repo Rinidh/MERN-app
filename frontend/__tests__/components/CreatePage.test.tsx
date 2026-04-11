@@ -3,6 +3,19 @@ import { render, screen } from "@testing-library/react";
 import { CreatePage } from "../../src/components/CreatePage";
 import userEvent from "@testing-library/user-event";
 
+const createProduct = vi.fn();
+const setMessage = vi.fn();
+
+vi.mock("../../src/store/product", () => ({
+  useProductStore: () => ({
+    createProduct,
+    error: "",
+    isLoading: false,
+    message: "",
+    setMessage,
+  }),
+}));
+
 describe("CreatePage", () => {
   const user = userEvent.setup({ delay: null });
 
@@ -32,9 +45,26 @@ describe("CreatePage", () => {
     expect(priceInput).toHaveValue("10");
     expect(imageInput).toHaveValue("img.png");
   });
+
+  it("clicking the Add button calls createProduct with the values input in the fields", async () => {
+    render(<CreatePage />);
+
+    const nameInput = screen.getByPlaceholderText(/name/i);
+    const priceInput = screen.getByPlaceholderText(/price/i);
+    const imageInput = screen.getByPlaceholderText(/image/i);
+
+    const fieldValues = { name: "product name", price: "10", image: "img.png" };
+    await user.type(nameInput, fieldValues.name);
+    await user.type(priceInput, fieldValues.price);
+    await user.type(imageInput, fieldValues.image);
+
+    await user.click(screen.getByRole("button", { name: /add/i }));
+
+    expect(createProduct).toHaveBeenCalledOnce();
+    expect(createProduct.mock.calls[0][0]).toEqual(fieldValues);
+  });
 });
 
-// typing into inputs updates field values
 // clicking the Add button calls createProduct with the values input in the fields
 // button shows a spinner when in loading state
 // shows a sucess toast when message is present
