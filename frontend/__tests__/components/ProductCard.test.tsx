@@ -21,7 +21,7 @@ const product: Product = {
 };
 
 const setup = () => {
-  const user = userEvent.setup();
+  const user = userEvent.setup({ delay: null });
   render(<ProductCard product={product} />);
   return { user };
 };

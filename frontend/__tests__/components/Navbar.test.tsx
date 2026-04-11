@@ -32,7 +32,7 @@ describe("Navbar", () => {
 
   it("clicking theme switch button changes button icon", async () => {
     renderWithProviders(<Navbar />);
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     const initialIcon = screen.getByLabelText(
       /light mode icon|dark mode icon/i,
