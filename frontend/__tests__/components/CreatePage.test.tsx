@@ -5,16 +5,22 @@ import userEvent from "@testing-library/user-event";
 
 const createProduct = vi.fn();
 const setMessage = vi.fn();
+let storeState;
 
 vi.mock("../../src/store/product", () => ({
-  useProductStore: () => ({
+  useProductStore: () => storeState,
+}));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  storeState = {
     createProduct,
     error: "",
     isLoading: false,
     message: "",
     setMessage,
-  }),
-}));
+  };
+});
 
 describe("CreatePage", () => {
   const user = userEvent.setup({ delay: null });
@@ -63,9 +69,15 @@ describe("CreatePage", () => {
     expect(createProduct).toHaveBeenCalledOnce();
     expect(createProduct.mock.calls[0][0]).toEqual(fieldValues);
   });
+
+  it("button shows a spinner when in loading state", () => {
+    storeState.isLoading = true;
+
+    render(<CreatePage />);
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
 });
 
-// clicking the Add button calls createProduct with the values input in the fields
 // button shows a spinner when in loading state
 // shows a sucess toast when message is present
 // resets input fields' values after success toast

@@ -100,7 +100,7 @@ export const CreatePage = () => {
                 width={"full"}
               >
                 {isLoading ? (
-                  <Spinner borderWidth={"medium"} size={"md"} />
+                  <Spinner borderWidth={"medium"} size={"md"} role="status" />
                 ) : (
                   "Add Product"
                 )}
