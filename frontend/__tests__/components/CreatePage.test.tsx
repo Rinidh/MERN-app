@@ -38,7 +38,7 @@ describe("CreatePage", () => {
       screen.getByRole("heading", { name: /create/i }),
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/name/i)).toHaveValue("");
-    expect(screen.getByPlaceholderText(/price/i)).toHaveValue(""); // value is null initially because of type="number" attribute
+    expect(screen.getByPlaceholderText(/price/i)).toHaveValue("");
     expect(screen.getByPlaceholderText(/image/i)).toHaveValue("");
     expect(screen.getByRole("button", { name: /add/i })).toBeInTheDocument();
   });
@@ -106,7 +106,7 @@ describe("CreatePage", () => {
       });
     });
 
-    storeState.message = "created successfully"; // change to success state
+    storeState.message = "created successfully";
     rerender(<CreatePage />);
 
     const clearedInputs = screen.getAllByRole("textbox");

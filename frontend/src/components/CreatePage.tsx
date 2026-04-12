@@ -50,6 +50,8 @@ export const CreatePage = () => {
     }
   }, [message, error, toast, setMessage]);
 
+  const bg = useColorModeValue("white", "gray.800");
+
   return (
     <Container maxW={"container.sm"}>
       <VStack>
@@ -57,12 +59,7 @@ export const CreatePage = () => {
           Create New Product
         </Heading>
 
-        <Box
-          w={"full"}
-          rounded={"lg"}
-          p={4}
-          bg={useColorModeValue("white", "gray.800")}
-        >
+        <Box w={"full"} rounded={"lg"} p={4} bg={bg}>
           <form onSubmit={handleSubmit}>
             <VStack spacing={4}>
               <Input
