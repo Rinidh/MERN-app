@@ -1,15 +1,21 @@
-import { it, expect, describe } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { it, expect, describe, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CreatePage } from "../../src/components/CreatePage";
 import userEvent from "@testing-library/user-event";
 
 const createProduct = vi.fn();
 const setMessage = vi.fn();
+const toast = vi.fn();
 let storeState;
 
 vi.mock("../../src/store/product", () => ({
   useProductStore: () => storeState,
 }));
+vi.mock("@chakra-ui/react", async () => {
+  const actual = await vi.importActual("@chakra-ui/react");
+
+  return { ...actual, useToast: () => toast };
+});
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -76,9 +82,41 @@ describe("CreatePage", () => {
     render(<CreatePage />);
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
+
+  it("shows a sucess toast when message is present", async () => {
+    storeState.message = "created successfully";
+
+    render(<CreatePage />);
+
+    expect(toast).toHaveBeenCalledOnce();
+    waitFor(() => expect(screen.getByRole("status")).toBeInTheDocument(), {
+      timeout: 2000,
+    });
+  });
+
+  it("resets input fields' values after success toast", async () => {
+    const { rerender } = render(<CreatePage />);
+
+    const inputs = screen.getAllByRole("textbox");
+    inputs.forEach((input) => {
+      fireEvent.change(input, {
+        target: {
+          value: "field value input",
+        },
+      });
+    });
+
+    storeState.message = "created successfully"; // change to success state
+    rerender(<CreatePage />);
+
+    const clearedInputs = screen.getAllByRole("textbox");
+    expect(clearedInputs.length).toBe(3);
+    clearedInputs.forEach((input) => {
+      expect(input).toHaveValue("");
+    });
+  });
 });
 
-// button shows a spinner when in loading state
-// shows a sucess toast when message is present
+// shows a sucess toast when message is presen
 // resets input fields' values after success toast
 // shows an error toast when error is present
