@@ -98,15 +98,19 @@ describe("CreatePage", () => {
     expect(addButton).toBeDisabled();
   });
 
-  it("shows a sucess toast when message is present", async () => {
+  it("shows a sucess toast when message is present", () => {
     storeState.message = "created successfully";
 
     render(<CreatePage />);
 
     expect(toast).toHaveBeenCalledOnce();
-    waitFor(() => expect(screen.getByRole("status")).toBeInTheDocument(), {
-      timeout: 2000,
-    });
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Success",
+        description: "created successfully",
+        status: "success",
+      }),
+    );
   });
 
   it("resets input fields' values after success toast", async () => {
@@ -137,8 +141,12 @@ describe("CreatePage", () => {
     render(<CreatePage />);
 
     expect(toast).toHaveBeenCalledOnce();
-    waitFor(() => expect(screen.getByRole("status")).toBeInTheDocument(), {
-      timeout: 2000,
-    });
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Error",
+        description: "failed to create",
+        status: "error",
+      }),
+    );
   });
 });
