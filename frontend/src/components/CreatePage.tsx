@@ -99,6 +99,7 @@ export const CreatePage = () => {
                 colorScheme="blue"
                 width={"full"}
                 disabled={isDisabled}
+                data-testid="add-button"
               >
                 {isLoading ? (
                   <Spinner borderWidth={"medium"} size={"md"} role="status" />

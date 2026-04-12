@@ -40,7 +40,7 @@ describe("CreatePage", () => {
     expect(screen.getByPlaceholderText(/name/i)).toHaveValue("");
     expect(screen.getByPlaceholderText(/price/i)).toHaveValue("");
     expect(screen.getByPlaceholderText(/image/i)).toHaveValue("");
-    expect(screen.getByRole("button", { name: /add/i })).toBeInTheDocument();
+    expect(screen.getByTestId("add-button")).toBeInTheDocument();
   });
 
   it("typing into inputs updates field values", async () => {
@@ -66,7 +66,7 @@ describe("CreatePage", () => {
     // image field is left empty
 
     expect(screen.getByPlaceholderText(/image/i)).toHaveValue("");
-    expect(screen.getByRole("button", { name: /add/i })).toBeDisabled();
+    expect(screen.getByTestId("add-button")).toBeDisabled();
   });
 
   it("clicking the Add button calls createProduct with the values input in the fields", async () => {
@@ -81,7 +81,7 @@ describe("CreatePage", () => {
     await user.type(priceInput, fieldValues.price);
     await user.type(imageInput, fieldValues.image);
 
-    await user.click(screen.getByRole("button", { name: /add/i }));
+    await user.click(screen.getByTestId("add-button"));
 
     expect(createProduct).toHaveBeenCalledOnce();
     expect(createProduct.mock.calls[0][0]).toEqual(fieldValues);
@@ -93,7 +93,9 @@ describe("CreatePage", () => {
     render(<CreatePage />);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
-    expect(screen.getByRole("button")).toBeDisabled();
+    const addButton = screen.getByTestId("add-button");
+    expect(addButton).not.toHaveTextContent(/add/i);
+    expect(addButton).toBeDisabled();
   });
 
   it("shows a sucess toast when message is present", async () => {
