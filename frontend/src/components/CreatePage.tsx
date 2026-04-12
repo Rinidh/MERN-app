@@ -38,8 +38,7 @@ export const CreatePage = () => {
       });
       setFieldValues(() => ({ name: "", price: "", image: "" }));
       setMessage("");
-    }
-    if (error) {
+    } else if (error) {
       toast({
         title: "Error",
         description: error,
