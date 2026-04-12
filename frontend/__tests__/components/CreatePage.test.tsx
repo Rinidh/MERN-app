@@ -115,8 +115,15 @@ describe("CreatePage", () => {
       expect(input).toHaveValue("");
     });
   });
-});
 
-// shows a sucess toast when message is presen
-// resets input fields' values after success toast
-// shows an error toast when error is present
+  it("shows an error toast when error is present", () => {
+    storeState.error = "failed to create";
+
+    render(<CreatePage />);
+
+    expect(toast).toHaveBeenCalledOnce();
+    waitFor(() => expect(screen.getByRole("status")).toBeInTheDocument(), {
+      timeout: 2000,
+    });
+  });
+});
