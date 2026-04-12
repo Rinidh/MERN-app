@@ -52,6 +52,9 @@ export const CreatePage = () => {
 
   const bg = useColorModeValue("white", "gray.800");
 
+  const isDisabled =
+    isLoading || !fieldValues.name || !fieldValues.price || !fieldValues.image;
+
   return (
     <Container maxW={"container.sm"}>
       <VStack>
@@ -95,6 +98,7 @@ export const CreatePage = () => {
                 variant={"solid"}
                 colorScheme="blue"
                 width={"full"}
+                disabled={isDisabled}
               >
                 {isLoading ? (
                   <Spinner borderWidth={"medium"} size={"md"} role="status" />

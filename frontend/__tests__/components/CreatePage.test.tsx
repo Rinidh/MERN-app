@@ -58,6 +58,17 @@ describe("CreatePage", () => {
     expect(imageInput).toHaveValue("img.png");
   });
 
+  it("Add button is disabled when any field is unfilled", async () => {
+    render(<CreatePage />);
+
+    await user.type(screen.getByPlaceholderText(/name/i), "product1");
+    await user.type(screen.getByPlaceholderText(/price/i), "10");
+    // image field is left empty
+
+    expect(screen.getByPlaceholderText(/image/i)).toHaveValue("");
+    expect(screen.getByRole("button", { name: /add/i })).toBeDisabled();
+  });
+
   it("clicking the Add button calls createProduct with the values input in the fields", async () => {
     render(<CreatePage />);
 
@@ -76,11 +87,13 @@ describe("CreatePage", () => {
     expect(createProduct.mock.calls[0][0]).toEqual(fieldValues);
   });
 
-  it("button shows a spinner when in loading state", () => {
+  it("button shows a spinner when in loading state and is disabled", () => {
     storeState.isLoading = true;
 
     render(<CreatePage />);
+
     expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeDisabled();
   });
 
   it("shows a sucess toast when message is present", async () => {
