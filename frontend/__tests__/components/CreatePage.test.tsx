@@ -84,7 +84,7 @@ describe("CreatePage", () => {
     await user.click(screen.getByTestId("add-button"));
 
     expect(createProduct).toHaveBeenCalledOnce();
-    expect(createProduct.mock.calls[0][0]).toEqual(fieldValues);
+    expect(createProduct).toHaveBeenCalledWith(fieldValues);
   });
 
   it("button shows a spinner when in loading state and is disabled", () => {
@@ -98,7 +98,7 @@ describe("CreatePage", () => {
     expect(addButton).toBeDisabled();
   });
 
-  it("shows a sucess toast when message is present", () => {
+  it("shows a success toast when message is present", () => {
     storeState.message = "created successfully";
 
     render(<CreatePage />);
@@ -111,6 +111,7 @@ describe("CreatePage", () => {
         status: "success",
       }),
     );
+    expect(setMessage).toHaveBeenCalledWith("");
   });
 
   it("resets input fields' values after success toast", async () => {
@@ -148,5 +149,6 @@ describe("CreatePage", () => {
         status: "error",
       }),
     );
+    expect(setMessage).toHaveBeenCalledWith("");
   });
 });
