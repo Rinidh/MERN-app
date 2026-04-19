@@ -1,10 +1,11 @@
 import { it, expect, describe, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CreatePage } from "../../src/components/CreatePage";
 import userEvent from "@testing-library/user-event";
 
 const createProduct = vi.fn();
 const setMessage = vi.fn();
+const setError = vi.fn();
 const toast = vi.fn();
 let storeState;
 
@@ -25,6 +26,7 @@ beforeEach(() => {
     isLoading: false,
     message: "",
     setMessage,
+    setError,
   };
 });
 
@@ -149,6 +151,6 @@ describe("CreatePage", () => {
         status: "error",
       }),
     );
-    expect(setMessage).toHaveBeenCalledWith("");
+    expect(setError).toHaveBeenCalledWith("");
   });
 });

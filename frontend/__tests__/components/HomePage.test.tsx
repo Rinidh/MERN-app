@@ -2,13 +2,12 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HomePage } from "../../src/components/HomePage";
-import { useProductStore } from "../../src/store/product";
 import { ProductCard } from "../../src/components/ProductCard";
-import { CustomSpinner } from "../../src/components/CustomSpinner";
 import userEvent from "@testing-library/user-event";
 
 const fetchProducts = vi.fn();
 const setMessage = vi.fn();
+const setError = vi.fn();
 let storeState;
 
 vi.mock("../../src/store/product", () => ({
@@ -43,6 +42,7 @@ describe("HomePage", () => {
     storeState = {
       fetchProducts,
       setMessage,
+      setError,
       products: [],
       error: "",
       isLoading: false,
@@ -103,6 +103,7 @@ describe("HomePage", () => {
 
     const modalAndToast = screen.getAllByText(/network error/i); // both a toast and the modal display the same error message in error state
     expect(modalAndToast.length).toBe(2);
+    expect(setError).toHaveBeenCalledWith("");
   });
 
   it("Retry button in modal triggers fetchProducts", async () => {
@@ -122,5 +123,6 @@ describe("HomePage", () => {
 
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.getByText("completed")).toBeInTheDocument();
+    expect(setMessage).toHaveBeenCalledWith("");
   });
 });
