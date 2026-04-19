@@ -23,15 +23,6 @@ export type ProductInput = {
 };
 
 /**
- * Standard response returned by store actions
- * (used by createProduct)
- */
-type ActionResult = {
-  success: boolean;
-  message: string;
-};
-
-/**
  * Shape of backend API response body's json
  */
 type ApiResponse<T> = {
@@ -52,7 +43,7 @@ type ProductStore = {
   setMessage: (message: string) => void;
   setError: (errorMessage: string) => void;
 
-  createProduct: (newProduct: ProductInput) => Promise<ActionResult | void>;
+  createProduct: (newProduct: ProductInput) => Promise<void>;
   fetchProducts: () => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   updateProduct: (
