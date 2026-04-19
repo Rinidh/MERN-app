@@ -50,6 +50,7 @@ type ProductStore = {
   message: string;
 
   setMessage: (message: string) => void;
+  setError: (errorMessage: string) => void;
 
   createProduct: (newProduct: ProductInput) => Promise<ActionResult | void>;
   fetchProducts: () => Promise<void>;
@@ -70,6 +71,8 @@ export const useProductStore = create<ProductStore>((setState) => ({
   error: null, // server message upon error
   message: "", // server message upon success
 
+  // functions to set `error` and `message` externally eg from CreatePage component
+  setError: (errorMessage: string) => setState({ error: errorMessage }),
   setMessage: (message) => setState({ message }),
 
   createProduct: async (newProduct) => {

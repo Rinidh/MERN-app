@@ -23,8 +23,15 @@ import { ProductCard } from "./ProductCard";
 import { CustomSpinner } from "./CustomSpinner";
 
 export const HomePage = (): JSX.Element => {
-  const { fetchProducts, products, error, isLoading, message, setMessage } =
-    useProductStore();
+  const {
+    fetchProducts,
+    products,
+    error,
+    isLoading,
+    message,
+    setMessage,
+    setError,
+  } = useProductStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -54,9 +61,9 @@ export const HomePage = (): JSX.Element => {
         status: "error",
         isClosable: true,
       });
-      setMessage("");
+      setError("");
     }
-  }, [message, error, toast, setMessage]);
+  }, [message, error, toast, setMessage, setError]);
 
   return (
     <Container maxW={"container.xl"} p={10}>

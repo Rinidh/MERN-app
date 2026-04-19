@@ -19,7 +19,7 @@ export const CreatePage = () => {
     price: "",
     image: "",
   });
-  const { createProduct, error, isLoading, message, setMessage } =
+  const { createProduct, error, isLoading, message, setMessage, setError } =
     useProductStore();
   const toast = useToast();
 
@@ -45,9 +45,10 @@ export const CreatePage = () => {
         status: "error",
         isClosable: true,
       });
-      setMessage("");
+      // setMessage("");
+      setError("");
     }
-  }, [message, error, toast, setMessage]);
+  }, [message, error, toast, setMessage, setError]);
 
   const bg = useColorModeValue("white", "gray.800");
 
