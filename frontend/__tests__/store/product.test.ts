@@ -95,6 +95,9 @@ describe("createProduct", () => {
     expect(state.products[0]).toEqual(mockProduct);
     expect(state.isLoading).toBe(false);
     expect(state.message).toBe("created");
+
+    expect(vi.mocked(fetch).mock.calls[0][1]).toHaveProperty("method", "POST");
+    expect(vi.mocked(fetch).mock.calls[0][1]).toHaveProperty("body");
   });
 
   it("adds error message to error state on API failure", async () => {
