@@ -113,3 +113,39 @@ describe("createProduct", () => {
     expect(state.products).toHaveLength(0);
   });
 });
+
+describe("fetchProducts", () => {
+  it("makes API call and adds product to state on success", async () => {
+    const mockProduct = {
+      name: "Test",
+      price: 100,
+      image: "img",
+    };
+
+    vi.mocked(fetch).mockResolvedValue({} as any);
+    vi.mocked(util.safeParseJson).mockResolvedValue({
+      data: [mockProduct],
+    });
+
+    await useProductStore.getState().fetchProducts();
+
+    const state = useProductStore.getState();
+
+    expect(state.products).toHaveLength(1);
+    expect(state.products[0]).toEqual(mockProduct);
+    expect(state.isLoading).toBe(false);
+  });
+
+  it("adds error message to error state on API failure", async () => {
+    const error = new Error("failed to fetch");
+    vi.mocked(fetch).mockRejectedValue(error);
+
+    await useProductStore.getState().fetchProducts();
+
+    const state = useProductStore.getState();
+
+    expect(state.error).toBe(error.message);
+    expect(state.isLoading).toBe(false);
+    expect(state.products).toHaveLength(0);
+  });
+});
