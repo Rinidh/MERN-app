@@ -1,9 +1,20 @@
 import { it, expect, describe } from "vitest";
 import { useProductStore } from "../../src/store/product";
+import * as util from "../../src/util";
 
-// beforeEach(() => {
+vi.spyOn(util, "safeParseJson");
+vi.spyOn(globalThis, "fetch");
 
-// })
+beforeEach(() => {
+  vi.resetAllMocks();
+
+  useProductStore.setState({
+    products: [],
+    isLoading: false,
+    error: null,
+    message: "",
+  });
+});
 
 describe("Product store - initial state", () => {
   it("has the correct default values", () => {
@@ -56,5 +67,49 @@ describe("createProduct", () => {
     const state = useProductStore.getState();
     expect(state.error).toBe("Price must be a valid number.");
     expect(state.isLoading).toBe(false);
+  });
+
+  it("makes API call and adds product to state on success", async () => {
+    const mockProduct = {
+      _id: "1",
+      name: "Test",
+      price: 100,
+      image: "img",
+    };
+
+    vi.mocked(fetch).mockResolvedValue({} as any);
+    vi.mocked(util.safeParseJson).mockResolvedValue({
+      data: mockProduct,
+      message: "created",
+    });
+
+    await useProductStore.getState().createProduct({
+      name: "Test",
+      price: "100",
+      image: "img",
+    });
+
+    const state = useProductStore.getState();
+
+    expect(state.products).toHaveLength(1);
+    expect(state.products[0]).toEqual(mockProduct);
+    expect(state.isLoading).toBe(false);
+    expect(state.message).toBe("created");
+  });
+
+  it("adds error message to error state on API failure", async () => {
+    vi.mocked(fetch).mockRejectedValue(new Error("service is down"));
+
+    await useProductStore.getState().createProduct({
+      name: "Test",
+      price: "100",
+      image: "img",
+    });
+
+    const state = useProductStore.getState();
+
+    expect(state.error).toBe("service is down");
+    expect(state.isLoading).toBe(false);
+    expect(state.products).toHaveLength(0);
   });
 });
