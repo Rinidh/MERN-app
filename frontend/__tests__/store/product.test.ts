@@ -152,3 +152,40 @@ describe("fetchProducts", () => {
     expect(state.products).toHaveLength(0);
   });
 });
+
+describe("deleteProduct", () => {
+  it("should remove product from state", async () => {
+    useProductStore.setState({
+      products: [{ _id: "1", name: "A", price: 10, image: "img" }],
+    });
+
+    (fetch as any).mockResolvedValue({});
+    (util.safeParseJson as any).mockResolvedValue({
+      message: "Deleted",
+    });
+
+    await useProductStore.getState().deleteProduct("1");
+
+    const state = useProductStore.getState();
+
+    expect(state.products).toEqual([]);
+    expect(state.message).toBe("Deleted");
+    expect(state.isLoading).toBe(false);
+
+    expect(vi.mocked(globalThis.fetch).mock.calls[0][1]).toHaveProperty(
+      "method",
+      "DELETE",
+    );
+  });
+
+  it("should handle error", async () => {
+    (fetch as any).mockRejectedValue(new Error("Delete error"));
+
+    await useProductStore.getState().deleteProduct("1");
+
+    const state = useProductStore.getState();
+
+    expect(state.error).toBe("Delete error");
+    expect(state.isLoading).toBe(false);
+  });
+});
