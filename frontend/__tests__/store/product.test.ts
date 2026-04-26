@@ -189,3 +189,20 @@ describe("deleteProduct", () => {
     expect(state.isLoading).toBe(false);
   });
 });
+
+describe("updateProduct", () => {
+  it.each([
+    ["NaN", "xyz"],
+    ["negative", "-1"],
+  ])("fails with error if price is %s", async (_, price) => {
+    await useProductStore.getState().updateProduct("1", {
+      name: "valid name",
+      price,
+      image: "valid image url",
+    });
+
+    const state = useProductStore.getState();
+    expect(state.error).toMatch(/^(?=.*price)(?=.*number).*/i);
+    expect(state.isLoading).toBe(false);
+  });
+});

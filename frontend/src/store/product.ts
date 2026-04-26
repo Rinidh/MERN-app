@@ -159,9 +159,11 @@ export const useProductStore = create<ProductStore>((setState) => ({
   updateProduct: async (pid, updatedProduct) => {
     setState({ error: null, message: "", isLoading: true });
 
-    if (updatedProduct.price && !Number.isNaN(Number(updatedProduct.price))) {
-      // if user optionally updates the price, he should use a valid number
-      setState({ error: "Price must be a valid number.", isLoading: false });
+    if (
+      Number.isNaN(Number(updatedProduct.price)) ||
+      Number(updatedProduct.price) <= 0
+    ) {
+      setState({ isLoading: false, error: "Price must be a valid number." });
       return;
     }
 
