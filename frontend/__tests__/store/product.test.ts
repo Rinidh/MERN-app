@@ -205,4 +205,70 @@ describe("updateProduct", () => {
     expect(state.error).toMatch(/^(?=.*price)(?=.*number).*/i);
     expect(state.isLoading).toBe(false);
   });
+
+  it("makes API call and updates product in state on success", async () => {
+    useProductStore.setState({
+      products: [
+        {
+          _id: "1",
+          name: "Test",
+          price: 100,
+          image: "img",
+        },
+      ],
+    });
+
+    const updatedProduct = {
+      _id: "1",
+      name: "Test updated",
+      price: 100,
+      image: "img",
+    };
+
+    vi.mocked(fetch).mockResolvedValue({} as any);
+    vi.mocked(util.safeParseJson).mockResolvedValue({
+      data: updatedProduct,
+      message: "updated",
+    });
+
+    await useProductStore.getState().updateProduct("1", {
+      name: "Test updated",
+    });
+
+    const state = useProductStore.getState();
+
+    expect(state.products[0]).toEqual(updatedProduct);
+    expect(state.isLoading).toBe(false);
+    expect(state.message).toBe("updated");
+
+    expect(vi.mocked(fetch).mock.calls[0][1]).toHaveProperty("method", "PUT");
+    expect(vi.mocked(fetch).mock.calls[0][1]).toHaveProperty("body");
+  });
+
+  it("adds error message to error state on API failure", async () => {
+    useProductStore.setState({
+      products: [
+        {
+          _id: "1",
+          name: "Test",
+          price: 100,
+          image: "img",
+        },
+      ],
+    });
+
+    vi.mocked(fetch).mockRejectedValue(new Error("service is down"));
+
+    await useProductStore.getState().createProduct({
+      name: "updated",
+      price: "100",
+      image: "img",
+    });
+
+    const state = useProductStore.getState();
+
+    expect(state.error).toBe("service is down");
+    expect(state.isLoading).toBe(false);
+    expect(state.products[0].name).not.toBe("updated");
+  });
 });
