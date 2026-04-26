@@ -160,8 +160,9 @@ export const useProductStore = create<ProductStore>((setState) => ({
     setState({ error: null, message: "", isLoading: true });
 
     if (
-      Number.isNaN(Number(updatedProduct.price)) ||
-      Number(updatedProduct.price) <= 0
+      updatedProduct.price &&
+      (Number.isNaN(Number(updatedProduct.price)) ||
+        Number(updatedProduct.price) <= 0)
     ) {
       setState({ isLoading: false, error: "Price must be a valid number." });
       return;
