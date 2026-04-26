@@ -12,8 +12,8 @@
     "build": "tsc -p backend/tsconfig.json",
     "start": "cross-env NODE_ENV=production node backend/dist/index.js",
     "dev": "cross-env NODE_ENV=development tsx backend/index.ts",
-    "test": "vitest",
-    "test:backend": "vitest backend",
+    "test:all": "vitest",
+    "test": "vitest backend",
     "expt": "tsx backend/expt.ts"
   },
   "type": "module",
