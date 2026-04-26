@@ -34,4 +34,40 @@ describe("safeParseJson", () => {
 
     await expect(safeParseJson(res)).rejects.toThrow("Failed to parse JSON");
   });
+
+  it("throws error with message when res.json() fails (Vite proxy returns empty body)", async () => {
+    const res = mockResponse({
+      ok: false,
+      json: vi.fn().mockRejectedValue(new Error("Unexpected end of JSON")),
+    });
+
+    await expect(safeParseJson(res)).rejects.toThrow("Server error");
+  });
+
+  it("throws backend message when returned from server", async () => {
+    const res = mockResponse({
+      ok: false,
+      json: vi.fn().mockResolvedValue({ message: "failed to create" }),
+    });
+
+    await expect(safeParseJson(res)).rejects.toThrow("failed to create");
+  });
+
+  it("throws 'Request failed' when no backend message", async () => {
+    const res = mockResponse({
+      ok: false,
+      json: vi.fn().mockResolvedValue({ error: "failed" }),
+    });
+
+    await expect(safeParseJson(res)).rejects.toThrow("Request failed");
+  });
+
+  it("throws 'Request failed' when parsed JSON is not object", async () => {
+    const res = mockResponse({
+      ok: false,
+      json: vi.fn().mockResolvedValue("failed"),
+    });
+
+    await expect(safeParseJson(res)).rejects.toThrow("Request failed");
+  });
 });
